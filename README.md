@@ -12,7 +12,7 @@
 [![TypeChecker](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 [![VersionControlHookManager](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json)](https://github.com/j178/prek)
 <!-- testing -->
-[![CoverageTester](https://img.shields.io/badge/coverage->=90%25-hsl(108,80%25,45%25)?logo=codecov&logoColor=white)](https://github.com/pytest-dev/pytest-cov)
+[![CoverageTester](https://codecov.io/gh/Winipedia/pyrig-build/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/pyrig-build)
 [![ProjectTester](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org)
 <!-- tooling -->
 [![PackageManager](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -23,11 +23,12 @@
 [![DocsBuilder](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://www.mkdocs.org)
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://Winipedia.github.io/pyrig-build)
 <!-- project-info -->
-[![ProgrammingLanguage](https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![PackageIndex](https://img.shields.io/pypi/v/pyrig-build?logo=pypi&logoColor=white)](https://pypi.org/project/pyrig-build)
+[![ProgrammingLanguage](https://img.shields.io/pypi/pyversions/pyrig-build)](https://www.python.org)
 [![License](https://img.shields.io/github/license/Winipedia/pyrig-build)](https://github.com/Winipedia/pyrig-build/blob/main/LICENSE)
 
 ---
 
-> Add your description here
+> A pyrig plugin to build artifacts.
 
 ---
