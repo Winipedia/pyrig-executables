@@ -1,4 +1,4 @@
-site_name: pyrig-build
+site_name: pyrig-executables
 nav:
 - Home: index.md
 - API: api.md

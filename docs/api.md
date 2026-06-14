@@ -1,3 +1,3 @@
 # API Reference
 
-::: pyrig_build
+::: pyrig_executables
