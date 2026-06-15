@@ -4,6 +4,8 @@ from pathlib import Path
 
 from pyrig.core.subprocesses import Args
 
+from pyrig_executables import main
+from pyrig_executables.rig import tools
 from pyrig_executables.rig.tools.executable_builder import ExecutableBuilder
 
 
@@ -39,14 +41,34 @@ class TestExecutableBuilder:
             "some-val",
             name="exename",
             entry_point=Path("entry/point.py"),
+            resource_modules=[main],
         ) == Args(
             (
                 "pyinstaller",
                 "--onefile",
                 "--name",
                 "exename",
+                "--collect-data",
+                "pyrig_executables.main",
                 "--some-arg",
                 "some-val",
+                "entry/point.py",
+            )
+        )
+        assert ExecutableBuilder.I.build_args(
+            name="exename",
+            entry_point=Path("entry/point.py"),
+            resource_modules=[main, tools],
+        ) == Args(
+            (
+                "pyinstaller",
+                "--onefile",
+                "--name",
+                "exename",
+                "--collect-data",
+                "pyrig_executables.main",
+                "--collect-data",
+                "pyrig_executables.rig.tools",
                 "entry/point.py",
             )
         )

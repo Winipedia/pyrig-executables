@@ -1,5 +1,7 @@
 """Workflow configuration for automated GitHub release creation."""
 
+from collections.abc import Iterable
+from types import ModuleType
 from typing import Any
 
 from pyrig.rig.configs.base.config_file import ConfigDict
@@ -7,6 +9,7 @@ from pyrig.rig.configs.remote_version_control.workflows.release import (
     ReleaseWorkflowConfigFile as BaseReleaseWorkflowConfigFile,
 )
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
 from pyrig_executables.rig.configs.main import MainConfigFile
 from pyrig_executables.rig.tools.executable_builder import ExecutableBuilder
@@ -132,6 +135,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
                     *ExecutableBuilder.I.build_args(
                         name=self.executable_name(),
                         entry_point=MainConfigFile.I.path(),
+                        resource_modules=self.resource_modules(),
                     )
                 )
             ),
@@ -252,3 +256,20 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             operating system (e.g. ``Linux``, ``Windows``, ``macOS``).
         """
         return self.insert_var("runner.os")
+
+    def resource_modules(self) -> Iterable[ModuleType]:
+        """Return the resource modules to bundle into the executable.
+
+        Resolves the project's ``rig/resources`` package via the
+        ``pyrig-resources`` plugin's
+        :class:`~pyrig_resources.rig.configs.resources_init.ResourcesInitConfigFile`
+        and returns its module, which :meth:`step_build_executable` passes to
+        the executable builder as ``--collect-data`` targets. Locating the
+        project's resources is a config concern, so it lives here rather than in
+        the project-agnostic executable builder tool. Override to bundle
+        additional resource packages.
+
+        Returns:
+            The project's resource modules (the ``rig/resources`` package).
+        """
+        return (ResourcesInitConfigFile.I.module(),)

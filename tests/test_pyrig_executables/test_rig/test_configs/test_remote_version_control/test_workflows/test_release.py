@@ -54,7 +54,7 @@ class TestReleaseWorkflowConfigFile:
             "name": "Build Executable",
             "id": "build-executable",
             "run": (
-                "uv run pyinstaller --onefile --name pyrig-executables-${{ runner.os }} src/pyrig_executables/main.py"  # noqa: E501
+                "uv run pyinstaller --onefile --name pyrig-executables-${{ runner.os }} --collect-data pyrig_executables.rig.resources src/pyrig_executables/main.py"  # noqa: E501
             ),
         }
 
@@ -106,3 +106,10 @@ class TestReleaseWorkflowConfigFile:
     def test_insert_os(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.insert_os() == "${{ runner.os }}"
+
+    def test_resource_modules(self) -> None:
+        """Test method."""
+        modules = list(ReleaseWorkflowConfigFile.I.resource_modules())
+        assert [module.__name__ for module in modules] == [
+            "pyrig_executables.rig.resources"
+        ]
