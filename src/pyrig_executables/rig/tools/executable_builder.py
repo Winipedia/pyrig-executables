@@ -45,11 +45,13 @@ class ExecutableBuilder(Tool):
     def build_args(self, *args: str, name: str, entry_point: Path) -> Args:
         """Construct the command that bundles a single-file executable.
 
-        Produces ``pyinstaller --onefile --windowed --name <name>
-        <entry_point>``, which builds one self-contained, windowed binary (no
-        console window) from the given entry-point script. The result is written
-        to the ``dist/`` directory. Override this method for a console
-        application, which keeps a terminal attached on Windows.
+        Produces ``pyinstaller --onefile --name <name> <entry_point>``, which
+        builds one self-contained binary from the given entry-point script. The
+        result is written to the ``dist/`` directory. The build runs in console
+        mode so the binary is a single file on every OS (on macOS ``--windowed``
+        would instead emit a ``.app`` bundle directory). Override this method to
+        add ``--windowed`` for a GUI application that should run without a
+        console window.
 
         Args:
             name: Output name for the executable (without an OS-specific
@@ -58,12 +60,9 @@ class ExecutableBuilder(Tool):
             *args: Additional arguments forwarded to ``pyinstaller``.
 
         Returns:
-            Args for ``pyinstaller --onefile --windowed --name <name>
-            <entry_point>``.
+            Args for ``pyinstaller --onefile --name <name> <entry_point>``.
         """
-        return self.args(
-            "--onefile", "--windowed", "--name", name, *args, entry_point.as_posix()
-        )
+        return self.args("--onefile", "--name", name, *args, entry_point.as_posix())
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return the build artifact paths to exclude from version control.

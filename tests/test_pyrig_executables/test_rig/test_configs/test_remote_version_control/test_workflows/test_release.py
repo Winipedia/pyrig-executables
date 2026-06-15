@@ -50,7 +50,7 @@ class TestReleaseWorkflowConfigFile:
             "name": "Build Executable",
             "id": "build-executable",
             "run": (
-                "uv run pyinstaller --onefile --windowed --name pyrig-executables-${{ runner.os }} src/pyrig_executables/main.py"  # noqa: E501
+                "uv run pyinstaller --onefile --name pyrig-executables-${{ runner.os }} src/pyrig_executables/main.py"  # noqa: E501
             ),
         }
 
