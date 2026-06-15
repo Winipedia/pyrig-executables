@@ -61,7 +61,7 @@ class TestReleaseWorkflowConfigFile:
             "id": "upload-executable",
             "uses": "actions/upload-artifact@main",
             "with": {
-                "name": "pyrig-executables-${{ runner.os }}",
+                "name": "executable-${{ runner.os }}",
                 "path": "dist",
             },
         }
@@ -73,7 +73,7 @@ class TestReleaseWorkflowConfigFile:
             "id": "download-executables",
             "uses": "actions/download-artifact@main",
             "with": {
-                "pattern": "pyrig-executables*",
+                "pattern": "executable-*",
                 "path": "dist",
                 "merge-multiple": "true",
             },
@@ -91,6 +91,13 @@ class TestReleaseWorkflowConfigFile:
             ReleaseWorkflowConfigFile.I.executable_name()
             == "pyrig-executables-${{ runner.os }}"
         )
+
+    def test_artifact_name(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.artifact_name("${{ runner.os }}") == (
+            "executable-${{ runner.os }}"
+        )
+        assert ReleaseWorkflowConfigFile.I.artifact_name("*") == "executable-*"
 
     def test_insert_os(self) -> None:
         """Test method."""

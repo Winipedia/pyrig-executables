@@ -45,7 +45,7 @@ jobs:
       id: upload-executable
       uses: actions/upload-artifact@main
       with:
-        name: pyrig-executables-${{ runner.os }}
+        name: executable-${{ runner.os }}
         path: dist
   publish:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event
@@ -80,7 +80,7 @@ jobs:
       id: download-executables
       uses: actions/download-artifact@main
       with:
-        pattern: pyrig-executables*
+        pattern: executable-*
         path: dist
         merge-multiple: 'true'
     - name: Create Release

@@ -145,8 +145,9 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that uploads the built executable as a workflow artifact.
 
-        Uploads the contents of ``dist/`` under a per-OS artifact name so the
-        ``publish`` job can later download every platform's binary.
+        Uploads the contents of ``dist/`` under the per-OS
+        :meth:`artifact_name` so the ``publish`` job can later download every
+        platform's binary.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -158,7 +159,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             step_func=self.step_upload_executable,
             uses="actions/upload-artifact@main",
             with_={
-                "name": self.executable_name(),
+                "name": self.artifact_name(self.insert_os()),
                 "path": ExecutableBuilder.I.dist_dir().as_posix(),
             },
             step=step,
@@ -171,9 +172,11 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that downloads every executable artifact into ``dist/``.
 
-        Merges every per-OS executable artifact (matched by the project-name
-        prefix) into a single ``dist/`` directory so they can be attached to
-        the release with one glob.
+        Merges every per-OS executable artifact, matched by the
+        :meth:`artifact_name` glob, into a single ``dist/`` directory so they
+        can be attached to the release with one glob. The narrow prefix avoids
+        pulling in unrelated artifacts that other actions may name after the
+        project.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -185,7 +188,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             step_func=self.step_download_executables,
             uses="actions/download-artifact@main",
             with_={
-                "pattern": f"{PackageManager.I.project_name()}*",
+                "pattern": self.artifact_name("*"),
                 "path": ExecutableBuilder.I.dist_dir().as_posix(),
                 "merge-multiple": "true",
             },
@@ -213,16 +216,33 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         return step
 
     def executable_name(self) -> str:
-        """Build the per-OS name shared by the executable and its artifact.
+        """Build the per-OS name of the executable binary and release asset.
 
         Combines the project name with the runner OS so each platform's binary
-        and its upload artifact get a unique, collision-free name (e.g.
+        gets a unique, recognizable, collision-free name (e.g.
         ``pyrig-executables-Linux``). The OS is resolved at workflow runtime.
 
         Returns:
             The ``<project>-<os>`` name string.
         """
         return f"{PackageManager.I.project_name()}-{self.insert_os()}"
+
+    def artifact_name(self, os: str) -> str:
+        """Build the workflow-artifact name for the given runner OS.
+
+        Single source of the ``executable-<os>`` artifact label, shared by the
+        upload step (with the resolved runner OS) and the download step (with
+        ``"*"`` to match every platform). It is deliberately generic and
+        distinct from :meth:`executable_name` so it does not collide with
+        artifacts that other actions name after the project.
+
+        Args:
+            os: The runner OS suffix, or ``"*"`` to form the download glob.
+
+        Returns:
+            The ``executable-<os>`` artifact name.
+        """
+        return f"executable-{os}"
 
     def insert_os(self) -> str:
         """Get the ``${{ runner.os }}`` expression.
