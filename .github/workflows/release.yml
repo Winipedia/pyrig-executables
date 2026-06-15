@@ -16,6 +16,37 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
   UV_NO_SYNC: 1
 jobs:
+  executable:
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - windows-latest
+        - macos-latest
+      fail-fast: true
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout Repository
+      id: checkout-repository
+      uses: actions/checkout@main
+    - name: Setup Package Manager
+      id: setup-package-manager
+      uses: astral-sh/setup-uv@main
+      with:
+        python-version: '3.14'
+    - name: Install Dependencies
+      id: install-dependencies
+      run: uv sync
+    - name: Build Executable
+      id: build-executable
+      run: uv run pyinstaller --onefile --noconsole --name pyrig-executables-${{ runner.os
+        }} src/pyrig_executables/main.py
+    - name: Upload Executable
+      id: upload-executable
+      uses: actions/upload-artifact@main
+      with:
+        name: pyrig-executables-${{ runner.os }}
+        path: dist
   publish:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event
       != 'schedule' }}
@@ -45,6 +76,13 @@ jobs:
       uses: mikepenz/release-changelog-builder-action@develop
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download Executables
+      id: download-executables
+      uses: actions/download-artifact@main
+      with:
+        pattern: pyrig-executables*
+        path: dist
+        merge-multiple: 'true'
     - name: Create Release
       id: create-release
       uses: ncipollo/release-action@main
@@ -52,3 +90,6 @@ jobs:
         tag: ${{ steps.extract-version.outputs.version }}
         name: ${{ steps.extract-version.outputs.version }}
         body: ${{ steps.build-changelog.outputs.changelog }}
+        artifacts: dist/*
+    needs:
+    - executable
