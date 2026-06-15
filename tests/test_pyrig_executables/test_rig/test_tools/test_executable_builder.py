@@ -43,7 +43,6 @@ class TestExecutableBuilder:
             (
                 "pyinstaller",
                 "--onefile",
-                "--windowed",
                 "--name",
                 "exename",
                 "--some-arg",
