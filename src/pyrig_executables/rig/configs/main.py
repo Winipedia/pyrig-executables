@@ -76,5 +76,5 @@ class MainConfigFile(CopyModuleConfigFile):
             The ``if __name__ == "__main__"`` block that calls ``main``, used to
             check for and scaffold the guard in the target module.
         """
-        return """if __name__ == "__main__":
-    main()"""
+        return f"""if __name__ == "__main__":
+    {main_func.__name__}()"""

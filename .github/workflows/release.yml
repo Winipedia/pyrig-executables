@@ -39,7 +39,7 @@ jobs:
       run: uv sync
     - name: Build Executable
       id: build-executable
-      run: uv run pyinstaller --onefile --noconsole --name pyrig-executables-${{ runner.os
+      run: uv run pyinstaller --onefile --windowed --name pyrig-executables-${{ runner.os
         }} src/pyrig_executables/main.py
     - name: Upload Executable
       id: upload-executable

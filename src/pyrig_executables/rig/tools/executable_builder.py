@@ -42,10 +42,10 @@ class ExecutableBuilder(Tool):
         """Get the GitHub releases page URL where the binaries are published."""
         return RemoteVersionController.I.releases_url()
 
-    def build_args(self, name: str, entry_point: Path, *args: str) -> Args:
+    def build_args(self, *args: str, name: str, entry_point: Path) -> Args:
         """Construct the command that bundles a single-file executable.
 
-        Produces ``pyinstaller --onefile --noconsole --name <name>
+        Produces ``pyinstaller --onefile --windowed --name <name>
         <entry_point>``, which builds one self-contained, windowed binary (no
         console window) from the given entry-point script. The result is written
         to the ``dist/`` directory. Override this method for a console
@@ -58,11 +58,11 @@ class ExecutableBuilder(Tool):
             *args: Additional arguments forwarded to ``pyinstaller``.
 
         Returns:
-            Args for ``pyinstaller --onefile --noconsole --name <name>
+            Args for ``pyinstaller --onefile --windowed --name <name>
             <entry_point>``.
         """
         return self.args(
-            "--onefile", "--noconsole", "--name", name, *args, entry_point.as_posix()
+            "--onefile", "--windowed", "--name", name, *args, entry_point.as_posix()
         )
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
@@ -72,7 +72,7 @@ class ExecutableBuilder(Tool):
             The ``dist`` directory that ``pyinstaller`` writes the built
             executables to.
         """
-        return (self.dist_dir().as_posix(), "*.spec", "build/")
+        return (f"{self.dist_dir().as_posix()}/", "*.spec", "build/")
 
     def dist_dir(self) -> Path:
         """Return the directory ``pyinstaller`` writes built executables to.
