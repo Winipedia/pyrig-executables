@@ -49,14 +49,22 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
 
         Runs across the default OS matrix (Linux, Windows, macOS), since
         ``pyinstaller`` cannot cross-compile and each binary must be built on
-        its target platform.
+        its target platform. Guarded with the same condition as the ``publish``
+        job so it only runs when the triggering health check succeeded and was
+        not a scheduled (cron) run -- otherwise the matrix would build binaries
+        on every health check completion even though nothing gets released.
 
         Returns:
-            Job configuration with an OS matrix strategy, a dynamic
-            ``runs-on`` value, and the build and upload steps.
+            Job configuration with the success guard, an OS matrix strategy, a
+            dynamic ``runs-on`` value, and the build and upload steps.
         """
         return self.job(
             job_func=self.job_executable,
+            if_condition=self.combined_if(
+                self.if_workflow_run_is_success(),
+                self.if_workflow_run_is_not_cron_triggered(),
+                operator="&&",
+            ),
             strategy=self.strategy_matrix_os(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_executable(),
