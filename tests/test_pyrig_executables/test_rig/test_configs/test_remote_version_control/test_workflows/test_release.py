@@ -1,5 +1,7 @@
 """Test module."""
 
+from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
+
 from pyrig_executables.rig.configs.remote_version_control.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
@@ -7,6 +9,13 @@ from pyrig_executables.rig.configs.remote_version_control.workflows.release impo
 
 class TestReleaseWorkflowConfigFile:
     """Test class."""
+
+    def test_priority(self) -> None:
+        """Test method."""
+        assert (
+            ReleaseWorkflowConfigFile.I.priority()
+            < ResourcesInitConfigFile.I.priority()
+        )
 
     def test_jobs(self) -> None:
         """Test method."""

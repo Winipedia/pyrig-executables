@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from types import ModuleType
 from typing import Any
 
-from pyrig.rig.configs.base.config_file import ConfigDict
+from pyrig.rig.configs.base.config_file import ConfigDict, Priority
 from pyrig.rig.configs.remote_version_control.workflows.release import (
     ReleaseWorkflowConfigFile as BaseReleaseWorkflowConfigFile,
 )
@@ -32,6 +32,22 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
        It downloads every executable artifact into ``dist/`` and attaches them
        to the GitHub release alongside the generated changelog.
     """
+
+    def priority(self) -> float:
+        """Return a priority one step after the resources config's.
+
+        Generating the build step imports the project's resources module (via
+        :class:`~pyrig_resources.rig.configs.resources_init.ResourcesInitConfigFile`,
+        see :meth:`resource_modules`), so the resources package must be
+        validated first. Deriving from its priority with
+        :meth:`~pyrig.rig.configs.base.config_file.Priority.decrease` keeps this
+        config validated immediately after it, tracking any change to its
+        priority instead of hard-coding a value.
+
+        Returns:
+            The resources config's priority lowered by one ``Priority.STEP``.
+        """
+        return Priority.decrease(ResourcesInitConfigFile.I.priority())
 
     def jobs(self) -> ConfigDict:
         """Build the complete jobs configuration for the workflow.
