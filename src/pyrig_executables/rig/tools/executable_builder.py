@@ -49,16 +49,18 @@ class ExecutableBuilder(Tool):
         *args: str,
         name: str,
         entry_point: Path,
+        icon: Path,
         resource_modules: Iterable[ModuleType],
     ) -> Args:
         """Construct the command that bundles a single-file executable.
 
-        Produces ``pyinstaller --onefile --name <name> <--collect-data ...>
-        <entry_point>``, building one self-contained binary from the entry-point
-        script and bundling each resource module via its own ``--collect-data``
-        flag. Collecting by package (rather than ``--add-data`` by path)
-        preserves the package layout so resources stay locatable at runtime
-        through ``importlib.resources`` -- which
+        Produces ``pyinstaller --onefile --name <name> --icon <icon>
+        <--collect-data ...> <entry_point>``, building one self-contained binary
+        from the entry-point script, applying the icon, and bundling each
+        resource module via its own ``--collect-data`` flag. Collecting by
+        package (rather than ``--add-data`` by path) preserves the package
+        layout so resources stay locatable at runtime through
+        ``importlib.resources`` -- which
         :func:`pyrig.core.resources.resource_path` uses -- in both development
         and the frozen executable, and avoids the platform-specific
         ``--add-data`` path separator. The result is written to the ``dist/``
@@ -71,6 +73,9 @@ class ExecutableBuilder(Tool):
             name: Output name for the executable (without an OS-specific
                 extension; ``pyinstaller`` appends ``.exe`` on Windows).
             entry_point: Path to the entry-point script to bundle.
+            icon: Path to the icon image. A non-native format (e.g. PNG) is
+                converted to the per-OS format (``.ico`` / ``.icns``) at build
+                time via Pillow (see :meth:`dev_dependencies`); ignored on Linux.
             *args: Additional arguments forwarded to ``pyinstaller``.
             resource_modules: Modules whose data files are bundled, one
                 ``--collect-data`` flag per module. Where the project keeps its
@@ -88,10 +93,24 @@ class ExecutableBuilder(Tool):
             "--onefile",
             "--name",
             name,
+            "--icon",
+            icon.as_posix(),
             *collect_data,
             *args,
             entry_point.as_posix(),
         )
+
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return the dev dependencies required to build executables.
+
+        Extends the default (the tool's own name) with ``pillow`` so
+        ``pyinstaller`` can convert a non-native icon image (e.g. PNG) into the
+        per-OS icon format (``.ico`` / ``.icns``) at build time.
+
+        Returns:
+            ``pyinstaller`` and ``pillow``.
+        """
+        return (*super().dev_dependencies(), "pillow")
 
     def version_control_ignore_paths(self) -> tuple[str, ...]:
         """Return the build artifact paths to exclude from version control.

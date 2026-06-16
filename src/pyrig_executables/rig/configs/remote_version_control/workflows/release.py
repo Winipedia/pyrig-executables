@@ -11,6 +11,7 @@ from pyrig.rig.configs.remote_version_control.workflows.release import (
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
+from pyrig_executables.rig.configs.icon import IconConfigFile
 from pyrig_executables.rig.configs.main import MainConfigFile
 from pyrig_executables.rig.tools.executable_builder import ExecutableBuilder
 
@@ -151,6 +152,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
                     *ExecutableBuilder.I.build_args(
                         name=self.executable_name(),
                         entry_point=MainConfigFile.I.path(),
+                        icon=IconConfigFile.I.path(),
                         resource_modules=self.resource_modules(),
                     )
                 )

@@ -20,8 +20,9 @@ class MainConfigFile(CopyModuleConfigFile):
     Copies this plugin's :mod:`pyrig_executables.main` scaffolding into the
     target project (with the package prefix rewritten to the project's package
     name), producing a ``main.py`` with a ``main`` entry point. Once the file
-    exists, validation only requires that a callable ``main`` is present, so any
-    user-implemented entry point is preserved and never overwritten.
+    exists, validation only checks that a callable ``main`` and a ``__main__``
+    guard are present, so any user-implemented entry point is preserved and
+    never overwritten.
     """
 
     def copy_module(self) -> ModuleType:

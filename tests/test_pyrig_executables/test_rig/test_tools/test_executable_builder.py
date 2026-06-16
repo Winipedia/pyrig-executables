@@ -12,6 +12,10 @@ from pyrig_executables.rig.tools.executable_builder import ExecutableBuilder
 class TestExecutableBuilder:
     """Test class."""
 
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        assert ExecutableBuilder.I.dev_dependencies() == ("pyinstaller", "pillow")
+
     def test_name(self) -> None:
         """Test method."""
         assert ExecutableBuilder.I.name() == "pyinstaller"
@@ -41,6 +45,7 @@ class TestExecutableBuilder:
             "some-val",
             name="exename",
             entry_point=Path("entry/point.py"),
+            icon=Path("icon.png"),
             resource_modules=[main],
         ) == Args(
             (
@@ -48,6 +53,8 @@ class TestExecutableBuilder:
                 "--onefile",
                 "--name",
                 "exename",
+                "--icon",
+                "icon.png",
                 "--collect-data",
                 "pyrig_executables.main",
                 "--some-arg",
@@ -58,6 +65,7 @@ class TestExecutableBuilder:
         assert ExecutableBuilder.I.build_args(
             name="exename",
             entry_point=Path("entry/point.py"),
+            icon=Path("icon.png"),
             resource_modules=[main, tools],
         ) == Args(
             (
@@ -65,6 +73,8 @@ class TestExecutableBuilder:
                 "--onefile",
                 "--name",
                 "exename",
+                "--icon",
+                "icon.png",
                 "--collect-data",
                 "pyrig_executables.main",
                 "--collect-data",
