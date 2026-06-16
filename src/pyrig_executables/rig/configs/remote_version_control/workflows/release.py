@@ -273,7 +273,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             GitHub Actions expression resolving to the current runner's
             operating system (e.g. ``Linux``, ``Windows``, ``macOS``).
         """
-        return self.insert_var("runner.os")
+        return self.insert_expression("runner.os")
 
     def resource_modules(self) -> Iterable[ModuleType]:
         """Return the resource modules to bundle into the executable.
