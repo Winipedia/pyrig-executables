@@ -55,12 +55,29 @@ class IconConfigFile(DictConfigFile):
         return {"text": PackageManager.I.project_name()}
 
     def _load(self) -> ConfigDict:
-        """Load the file's structured content.
+        """Raise -- the icon is binary and is never loaded as a dict.
+
+        :meth:`is_correct` validates the PNG signature and :meth:`merge_configs`
+        rebuilds from :meth:`_configs`, so neither reads the file. This guard
+        surfaces a bug if the dict-loading machinery is ever invoked on the icon.
+
+        Raises:
+            RuntimeError: Always; the icon is never loaded as a dict.
+        """
+        msg = "The icon is a binary PNG and is never loaded as a dict."
+        raise RuntimeError(msg)
+
+    def merge_configs(self) -> ConfigDict:
+        """Rebuild the icon spec without reading the binary file.
+
+        A PNG has no structured content to merge, so regeneration always uses
+        the full spec from :meth:`_configs` instead of reading the file via
+        :meth:`_load`.
 
         Returns:
-            An empty dict; a binary icon has no structured content to parse.
+            The icon spec (see :meth:`_configs`).
         """
-        return {}
+        return self.configs()
 
     def _dump(self, configs: ConfigDict) -> None:
         """Render the icon text to a PNG.

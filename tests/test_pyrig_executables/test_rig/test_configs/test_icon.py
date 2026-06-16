@@ -3,6 +3,7 @@
 from contextlib import chdir
 from pathlib import Path
 
+import pytest
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 from pytest_mock import MockerFixture
 
@@ -32,7 +33,12 @@ class TestIconConfigFile:
 
     def test__load(self) -> None:
         """Test method."""
-        assert IconConfigFile.I._load() == {}  # noqa: SLF001
+        with pytest.raises(RuntimeError):
+            IconConfigFile.I._load()  # noqa: SLF001
+
+    def test_merge_configs(self) -> None:
+        """Test method."""
+        assert IconConfigFile.I.merge_configs() == {"text": "pyrig-executables"}
 
     def test__dump(self, mocker: MockerFixture, tmp_path: Path) -> None:
         """Test method."""

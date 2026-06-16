@@ -33,3 +33,59 @@
 > A pyrig plugin to build executables.
 
 ---
+
+## What is pyrig-executables
+
+pyrig-executables is a plugin for [pyrig](https://github.com/Winipedia/pyrig)
+that turns your project into standalone, downloadable executables and publishes
+them with every GitHub release — one self-contained binary per operating system.
+
+## Features
+
+### Standalone executables
+
+Builds a single-file executable of your project for Linux, Windows, and macOS
+and attaches each one to the GitHub release, so anyone can download and run it
+without installing Python.
+
+### Release workflow integration
+
+Extends pyrig's release workflow with a build job that compiles the binaries
+with PyInstaller across all three operating systems and uploads them after a
+successful release.
+
+### Entry point and icon scaffolding
+
+Scaffolds a `main.py` entry point to build from and a default `icon.png`
+rendered from your project name to brand it — both ready to replace with your
+own.
+
+### Bundled resources
+
+Bundles your project's resources into the executable, so its data files ship
+inside the binary.
+
+### Downloads badge
+
+Adds a badge showing the total download count of your release binaries.
+
+### Run command
+
+Adds a `pyrig-executables run` command that runs your project's entry point the
+same way the built executable does, so you can try it locally before releasing.
+
+## Usage
+
+Add pyrig-executables as a development dependency and run `pyrig mkroot` to
+scaffold everything. No tokens or secrets are required — the release workflow
+uses GitHub's automatic token.
+
+```bash
+uv add --group dev pyrig-executables
+uv run pyrig mkroot
+```
+
+## Documentation
+
+Full documentation, including the auto-generated API reference, is available on
+the [documentation site](https://Winipedia.github.io/pyrig-executables).
