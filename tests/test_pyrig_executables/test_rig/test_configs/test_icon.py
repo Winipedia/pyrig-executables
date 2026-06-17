@@ -27,34 +27,24 @@ class TestIconConfigFile:
 
     def test__configs(self) -> None:
         """Test method."""
-        assert IconConfigFile.I._configs() == {  # noqa: SLF001
-            "text": "pyrig-executables",
-        }
+        assert IconConfigFile.I._configs() == {}  # noqa: SLF001
 
     def test__load(self) -> None:
         """Test method."""
         with pytest.raises(RuntimeError):
             IconConfigFile.I._load()  # noqa: SLF001
 
-    def test_merge_configs(self) -> None:
-        """Test method."""
-        assert IconConfigFile.I.merge_configs() == {"text": "pyrig-executables"}
-
     def test__dump(self, mocker: MockerFixture, tmp_path: Path) -> None:
         """Test method."""
         with chdir(tmp_path):
             icon = Path("icon.png")
             mocker.patch.object(IconConfigFile, "path", return_value=icon)
-            IconConfigFile.I._dump({"text": "icon"})  # noqa: SLF001
+            IconConfigFile.I._dump({})  # noqa: SLF001
             assert icon.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
 
     def test_is_correct(self, mocker: MockerFixture) -> None:
         """Test method."""
         assert IconConfigFile.I.is_correct() is True
         path = mocker.patch.object(IconConfigFile, "path")
-        path.return_value.read_bytes.return_value = b"not a png"
+        path.return_value.exists.return_value = False
         assert IconConfigFile.I.is_correct() is False
-
-    def test_png_signature(self) -> None:
-        """Test method."""
-        assert IconConfigFile.I.png_signature() == b"\x89PNG\r\n\x1a\n"

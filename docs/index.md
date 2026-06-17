@@ -79,11 +79,10 @@ own entry point is preserved.
 
 ### Icon
 
-`IconConfigFile` generates a default `icon.png` in the resources package,
-rendering the project name with Pillow's bundled font. The build passes it to
-`pyinstaller --icon`, which converts it to the per-OS format (`.ico` on Windows,
-`.icns` on macOS; ignored on Linux). Only the PNG signature is validated, so any
-valid PNG you drop in is kept.
+`IconConfigFile` copies the plugin's bundled default `icon.png` into the
+project's resources package. The build passes it to `pyinstaller --icon`, which
+converts it to the per-OS format (`.ico` on Windows, `.icns` on macOS; ignored
+on Linux). It is created only when missing, so any icon you drop in is kept.
 
 ### Release workflow
 

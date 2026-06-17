@@ -1,23 +1,24 @@
 """Config that scaffolds the executable's icon as ``resources/icon.png``."""
 
+import shutil
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+from pyrig.core.resources import resource_path
 from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
-from pyrig.rig.tools.package_manager import PackageManager
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
+
+from pyrig_executables.rig import resources
 
 
 class IconConfigFile(DictConfigFile):
     """Scaffold the ``icon.png`` used as the executable's icon.
 
-    Creates a placeholder ``icon.png`` inside the project's ``rig/resources``
-    package, which the release workflow passes to ``pyinstaller --icon``.
-    ``pyinstaller`` converts the PNG to the per-OS icon format (``.ico`` on
-    Windows, ``.icns`` on macOS; ignored on Linux) at build time. The generated
-    file is a simple default icon rendering the project name -- replace it with
-    your own. Only the PNG signature is validated, so any valid PNG is
-    preserved while a missing or non-PNG file is regenerated.
+    Copies the plugin's bundled default ``icon.png`` into the project's
+    ``rig/resources`` package, where the release workflow passes it to
+    ``pyinstaller --icon``. ``pyinstaller`` converts the PNG to the per-OS icon
+    format (``.ico`` on Windows, ``.icns`` on macOS; ignored on Linux) at build
+    time. The copied file is a default -- replace it with your own; it is only
+    created when missing, so a project's own icon is preserved.
     """
 
     def parent_path(self) -> Path:
@@ -46,20 +47,21 @@ class IconConfigFile(DictConfigFile):
         return "png"
 
     def _configs(self) -> ConfigDict:
-        """Return the spec that defines the generated icon.
+        """Return the required structured content.
 
         Returns:
-            The icon spec consumed by :meth:`_dump`: the ``text`` to render
-            (the project name).
+            An empty dict; the icon is a binary file copied verbatim, with no
+            structured content to enforce.
         """
-        return {"text": PackageManager.I.project_name()}
+        return {}
 
     def _load(self) -> ConfigDict:
         """Raise -- the icon is binary and is never loaded as a dict.
 
-        :meth:`is_correct` validates the PNG signature and :meth:`merge_configs`
-        rebuilds from :meth:`_configs`, so neither reads the file. This guard
-        surfaces a bug if the dict-loading machinery is ever invoked on the icon.
+        :meth:`is_correct` only checks for the file's existence, so an existing
+        icon is always correct and ``validate`` never reaches the merge step
+        that would read the file. This guard surfaces a bug if the dict-loading
+        machinery is ever invoked on the icon.
 
         Raises:
             RuntimeError: Always; the icon is never loaded as a dict.
@@ -67,54 +69,31 @@ class IconConfigFile(DictConfigFile):
         msg = "The icon is a binary PNG and is never loaded as a dict."
         raise RuntimeError(msg)
 
-    def merge_configs(self) -> ConfigDict:
-        """Rebuild the icon spec without reading the binary file.
-
-        A PNG has no structured content to merge, so regeneration always uses
-        the full spec from :meth:`_configs` instead of reading the file via
-        :meth:`_load`.
-
-        Returns:
-            The icon spec (see :meth:`_configs`).
-        """
-        return self.configs()
-
     def _dump(self, configs: ConfigDict) -> None:
-        """Render the icon text to a PNG.
+        """Copy the plugin's bundled default icon into the project.
 
-        Draws ``configs["text"]`` with Pillow's bundled default font on a canvas
-        sized from the text's glyph mask, using default colors (no external
-        assets, no color settings). ``pyinstaller`` converts the PNG to the
-        per-OS icon format at build time. Only runs when the icon is missing or
-        invalid, so a user-provided icon is never overwritten.
+        Copies the ``icon.png`` shipped in this plugin's resources package to
+        the project's resources directory. ``pyinstaller`` converts it to the
+        per-OS icon format at build time. Only runs when the icon is missing, so
+        a user-provided icon is never overwritten.
 
         Args:
-            configs: The icon spec from :meth:`_configs` (just ``text``).
+            configs: Ignored; the icon is a binary file copied verbatim.
         """
-        text = configs["text"]
-        image = Image.new("RGB", ImageFont.load_default().getmask(text).size)
-        ImageDraw.Draw(image).text((0, 0), text)
-        image.save(self.path())
+        del configs
+        shutil.copy(
+            resource_path(name=self.filename(), package=resources),
+            self.path(),
+        )
 
     def is_correct(self) -> bool:
-        """Return whether the icon file is a valid PNG.
+        """Return whether the icon file exists.
 
-        Validates only the PNG signature (the file's leading magic bytes), not
-        the image contents, so any valid PNG is accepted and a user-provided
-        icon is preserved. A non-PNG file is regenerated. Existence is assumed:
-        ``is_correct`` is only ever called once the file is present (``validate``
-        creates it first; the drift check runs over committed files).
+        Existence is the only requirement: the bundled default is a valid PNG
+        and any user-provided icon is preserved, so the file's contents are not
+        validated.
 
         Returns:
-            ``True`` if the icon file begins with the PNG signature.
+            ``True`` if the icon file exists.
         """
-        return self.path().read_bytes().startswith(self.png_signature())
-
-    def png_signature(self) -> bytes:
-        """Return the PNG file signature.
-
-        Returns:
-            The 8-byte magic header that every PNG file starts with, used by
-            :meth:`is_correct` to verify the icon is a PNG.
-        """
-        return b"\x89PNG\r\n\x1a\n"
+        return self.path().exists()

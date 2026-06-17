@@ -56,9 +56,8 @@ successful release.
 
 ### Entry point and icon scaffolding
 
-Scaffolds a `main.py` entry point to build from and a default `icon.png`
-rendered from your project name to brand it — both ready to replace with your
-own.
+Scaffolds a `main.py` entry point to build from and a default `icon.png` to
+brand it — both ready to replace with your own.
 
 ### Bundled resources
 
