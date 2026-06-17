@@ -46,11 +46,11 @@ generated, code-level documentation.
 
 ```bash
 uv add --group dev pyrig-executables
-uv run pyrig mkroot
+uv run pyrig sync
 ```
 
 No tokens or secrets are required — the release workflow authenticates with the
-automatic `GITHUB_TOKEN`. After `mkroot` you may need to fix up the badges in
+automatic `GITHUB_TOKEN`. After `pyrig sync` you may need to fix up the badges in
 `README.md` and `docs/index.md` once. The `pyinstaller` and `pillow` build
 dependencies are added for you, so you can also build locally.
 

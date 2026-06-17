@@ -76,13 +76,13 @@ same way the built executable does, so you can try it locally before releasing.
 
 ## Usage
 
-Add pyrig-executables as a development dependency and run `pyrig mkroot` to
+Add pyrig-executables as a development dependency and run `pyrig sync` to
 scaffold everything. No tokens or secrets are required — the release workflow
 uses GitHub's automatic token.
 
 ```bash
 uv add --group dev pyrig-executables
-uv run pyrig mkroot
+uv run pyrig sync
 ```
 
 ## Documentation
