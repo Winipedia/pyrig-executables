@@ -32,7 +32,7 @@ class TestReleaseWorkflowConfigFile:
         assert len(job) == 1
         assert job["executable"]["if"] == (
             "${{ github.event.workflow_run.conclusion == 'success' "
-            "&& github.event.workflow_run.event != 'schedule' }}"
+            "&& github.event.workflow_run.event == 'push' }}"
         )
 
     def test_job_publish(self) -> None:
