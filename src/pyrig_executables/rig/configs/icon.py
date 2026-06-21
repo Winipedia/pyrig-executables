@@ -2,9 +2,10 @@
 
 import shutil
 from pathlib import Path
+from typing import Any
 
 from pyrig.core.resources import resource_path
-from pyrig.rig.configs.base.config_file import ConfigDict, DictConfigFile
+from pyrig.rig.configs.base.config_file import DictConfigFile
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
 from pyrig_executables.rig import resources
@@ -46,7 +47,7 @@ class IconConfigFile(DictConfigFile):
         """
         return "png"
 
-    def _configs(self) -> ConfigDict:
+    def _configs(self) -> dict[str, Any]:
         """Return the required structured content.
 
         Returns:
@@ -55,7 +56,7 @@ class IconConfigFile(DictConfigFile):
         """
         return {}
 
-    def _load(self) -> ConfigDict:
+    def _load(self) -> dict[str, Any]:
         """Raise -- the icon is binary and is never loaded as a dict.
 
         :meth:`is_correct` only checks for the file's existence, so an existing
@@ -69,7 +70,7 @@ class IconConfigFile(DictConfigFile):
         msg = "The icon is a binary PNG and is never loaded as a dict."
         raise RuntimeError(msg)
 
-    def _dump(self, configs: ConfigDict) -> None:
+    def _dump(self, configs: dict[str, Any]) -> None:
         """Copy the plugin's bundled default icon into the project.
 
         Copies the ``icon.png`` shipped in this plugin's resources package to

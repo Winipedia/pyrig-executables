@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from types import ModuleType
 from typing import Any
 
-from pyrig.rig.configs.base.config_file import ConfigDict, Priority
+from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.tools.package_manager import PackageManager
 from pyrig_dev.rig.configs.remote_version_control.workflows.release import (
     ReleaseWorkflowConfigFile as BaseReleaseWorkflowConfigFile,
@@ -50,7 +50,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return Priority.decrease(ResourcesInitConfigFile.I.priority())
 
-    def jobs(self) -> ConfigDict:
+    def jobs(self) -> dict[str, Any]:
         """Build the complete jobs configuration for the workflow.
 
         Prepends the executable build job to the base jobs so it runs before
@@ -64,7 +64,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             **super().jobs(),
         }
 
-    def job_executable(self) -> ConfigDict:
+    def job_executable(self) -> dict[str, Any]:
         """Build the matrix job that compiles the executable on every OS.
 
         Runs across the default OS matrix (Linux, Windows, macOS), since
@@ -82,7 +82,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             steps=self.steps_executable(),
         )
 
-    def job_publish(self) -> ConfigDict:
+    def job_publish(self) -> dict[str, Any]:
         """Build the release job, gated on the executable build job.
 
         Adds a ``needs`` dependency on ``executable`` so the release is
