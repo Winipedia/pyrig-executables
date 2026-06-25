@@ -1,4 +1,4 @@
-"""Config that scaffolds the executable's icon as ``resources/icon.png``."""
+"""Config that scaffolds the executable's icon as ``rig/resources/icon.png``."""
 
 import shutil
 from pathlib import Path

@@ -2,7 +2,7 @@
 
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
-from pyrig_executables.rig.configs.remote_version_control.workflows.release import (
+from pyrig_executables.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
 

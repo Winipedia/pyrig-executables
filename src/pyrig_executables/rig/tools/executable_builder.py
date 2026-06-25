@@ -25,17 +25,21 @@ class ExecutableBuilder(Tool):
     """
 
     def name(self) -> str:
-        """Get tool name."""
+        """Return the tool command name.
+
+        Returns:
+            ``'pyinstaller'``
+        """
         return "pyinstaller"
 
     def group(self) -> str:
-        """Returns the group the tool belongs to."""
+        """Return the badge group this tool belongs to."""
         return Group.PROJECT_INFO
 
     def image_url(self) -> str:
         """Get the GitHub release downloads badge URL."""
         owner, repo = (
-            VersionController.I.repo_owner(check_repo_url=False),
+            VersionController.I.repo_owner(),
             PackageManager.I.project_name(),
         )
         return f"https://img.shields.io/github/downloads/{owner}/{repo}/total?logo=github&label=downloads"
@@ -55,7 +59,7 @@ class ExecutableBuilder(Tool):
         """Construct the command that bundles a single-file executable.
 
         Produces ``pyinstaller --onefile --name <name> --icon <icon>
-        <--collect-data ...> <entry_point>``, building one self-contained binary
+        <--collect-data ...> [*args] <entry_point>``, building one self-contained binary
         from the entry-point script, applying the icon, and bundling each
         resource module via its own ``--collect-data`` flag. Collecting by
         package (rather than ``--add-data`` by path) preserves the package
@@ -70,13 +74,13 @@ class ExecutableBuilder(Tool):
         application that should run without a console window.
 
         Args:
+            *args: Additional arguments forwarded to ``pyinstaller``.
             name: Output name for the executable (without an OS-specific
                 extension; ``pyinstaller`` appends ``.exe`` on Windows).
             entry_point: Path to the entry-point script to bundle.
             icon: Path to the icon image. A non-native format (e.g. PNG) is
                 converted to the per-OS format (``.ico`` / ``.icns``) at build
                 time via Pillow (see :meth:`dev_dependencies`); ignored on Linux.
-            *args: Additional arguments forwarded to ``pyinstaller``.
             resource_modules: Modules whose data files are bundled, one
                 ``--collect-data`` flag per module. Where the project keeps its
                 resources is the caller's concern, so this is required.

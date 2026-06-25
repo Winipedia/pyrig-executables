@@ -5,10 +5,10 @@ from types import ModuleType
 from typing import Any
 
 from pyrig.rig.configs.base.config_file import Priority
-from pyrig.rig.tools.package_manager import PackageManager
-from pyrig_dev.rig.configs.remote_version_control.workflows.release import (
+from pyrig.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile as BaseReleaseWorkflowConfigFile,
 )
+from pyrig.rig.tools.package_manager import PackageManager
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
 from pyrig_executables.rig.configs.icon import IconConfigFile
