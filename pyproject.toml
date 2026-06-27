@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-executables"
-version = "1.15.0"
+version = "1.20.0"
 description = "A pyrig plugin to build executables."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -57,7 +57,7 @@ dev = [
     "pyinstaller>=6.21.0",
     "pyrig>=15.27.0",
     "pyrig-codecov>=1.3.2",
-    "pyrig-fixtures>=0.8.0",
+    "pyrig-fixtures>=0.20.0",
     "pyrig-pypi>=1.5.1",
     "pytest>=9.0.3",
     "pytest-cov>=7.1.0",
