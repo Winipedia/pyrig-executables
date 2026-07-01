@@ -48,19 +48,17 @@ class TestExecutableBuilder:
             icon=Path("icon.png"),
             resource_modules=[main],
         ) == Args(
-            (
-                "pyinstaller",
-                "--onefile",
-                "--name",
-                "exename",
-                "--icon",
-                "icon.png",
-                "--collect-data",
-                "pyrig_executables.main",
-                "--some-arg",
-                "some-val",
-                "entry/point.py",
-            )
+            "pyinstaller",
+            "--onefile",
+            "--name",
+            "exename",
+            "--icon",
+            "icon.png",
+            "--collect-data",
+            "pyrig_executables.main",
+            "--some-arg",
+            "some-val",
+            "entry/point.py",
         )
         assert ExecutableBuilder.I.build_args(
             name="exename",
@@ -68,19 +66,17 @@ class TestExecutableBuilder:
             icon=Path("icon.png"),
             resource_modules=[main, tools],
         ) == Args(
-            (
-                "pyinstaller",
-                "--onefile",
-                "--name",
-                "exename",
-                "--icon",
-                "icon.png",
-                "--collect-data",
-                "pyrig_executables.main",
-                "--collect-data",
-                "pyrig_executables.rig.tools",
-                "entry/point.py",
-            )
+            "pyinstaller",
+            "--onefile",
+            "--name",
+            "exename",
+            "--icon",
+            "icon.png",
+            "--collect-data",
+            "pyrig_executables.main",
+            "--collect-data",
+            "pyrig_executables.rig.tools",
+            "entry/point.py",
         )
 
     def test_version_control_ignore_paths(self) -> None:
