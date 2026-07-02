@@ -33,55 +33,34 @@
 
 ---
 
-## What is pyrig-executables
+## Overview
 
-pyrig-executables is a plugin for [pyrig](https://github.com/Winipedia/pyrig)
-that turns your project into standalone, downloadable executables and publishes
-them with every GitHub release — one self-contained binary per operating system.
+pyrig-executables is a [pyrig](https://github.com/Winipedia/pyrig) plugin that
+turns your project into standalone executables and attaches one per operating
+system to every GitHub release — so anyone can run it without installing Python.
 
-## Features
+## What it adds
 
-### Standalone executables
-
-Builds a single-file executable of your project for Linux, Windows, and macOS
-and attaches each one to the GitHub release, so anyone can download and run it
-without installing Python.
-
-### Release workflow integration
-
-Extends pyrig's release workflow with a build job that compiles the binaries
-with PyInstaller across all three operating systems and uploads them after a
-successful release.
-
-### Entry point and icon scaffolding
-
-Scaffolds a `main.py` entry point to build from and a default `icon.png` to
-brand it — both ready to replace with your own.
-
-### Bundled resources
-
-Bundles your project's resources into the executable, so its data files ship
-inside the binary.
-
-### Downloads badge
-
-Adds a badge showing the total download count of your release binaries.
-
-### Run command
-
-Adds a `pyrig-executables run` command that runs your project's entry point the
-same way the built executable does, so you can try it locally before releasing.
+- **Standalone executables** — a single-file binary of your project for Linux,
+  Windows, and macOS, built with PyInstaller.
+- **Release integration** — a matrix build job that compiles and attaches a
+  binary per OS to each release.
+- **Entry point and icon** — a `main.py` and a default icon, both scaffolded and
+  ready to replace with your own.
+- **Bundled resources** — your project's resources are bundled into the binary.
+- **Run command** — `pyrig-executables run` runs your entry point the same way
+  the built binary does, so you can try it locally.
+- **Downloads badge** — a badge showing the total downloads of your binaries.
 
 ## Usage
 
-Add pyrig-executables as a development dependency and run `pyrig sync` to
-scaffold everything. No tokens or secrets are required — the release workflow
-uses GitHub's automatic token.
-
 ```bash
-uv add --group dev pyrig-executables
+uv add pyrig-executables --dev
 uv run pyrig sync
 ```
+
+No tokens or secrets are required — the release workflow uses GitHub's automatic
+token.
 
 ## Documentation
 

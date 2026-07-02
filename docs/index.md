@@ -44,7 +44,7 @@ automatically. This page describes each piece; see the API Reference for the
 generated, code-level documentation.
 
 ```bash
-uv add --group dev pyrig-executables
+uv add pyrig-executables --dev
 uv run pyrig sync
 ```
 
