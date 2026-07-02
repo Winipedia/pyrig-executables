@@ -8,7 +8,11 @@ variable name.
 
 
 def run() -> None:
-    """Run the project's entry point locally, as the built executable does."""
+    """Run the project.
+
+    It executes the `main.py` module as `__main__`.
+    This is the same entry point the built executable uses.
+    """
     from pyrig_executables.rig.cli.commands.run import run_main  # noqa: PLC0415
 
     run_main()
