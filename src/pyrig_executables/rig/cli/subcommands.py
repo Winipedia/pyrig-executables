@@ -1,17 +1,14 @@
 """Project-specific CLI commands.
 
-All functions in this module are automatically discovered and registered
-as CLI commands for this project.
+Functions defined directly in this module are discovered and registered as
+top-level CLI commands. Module-level `typer.Typer` instances are registered
+as command groups, with each group named after the kebab-case form of its
+variable name.
 """
 
 
 def run() -> None:
-    """Run the project by executing its ``main.py`` as the entry module.
-
-    Runs the project's ``main.py`` under the ``__main__`` name so its
-    ``if __name__ == "__main__"`` guard fires and calls ``main``, mirroring how
-    the built executable runs.
-    """
+    """Run the project's entry point locally, as the built executable does."""
     from pyrig_executables.rig.cli.commands.run import run_main  # noqa: PLC0415
 
     run_main()

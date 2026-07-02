@@ -1,4 +1,4 @@
-"""Workflow configuration for automated GitHub release creation."""
+"""Extension of the release workflow that builds and attaches executables."""
 
 from collections.abc import Iterable
 from types import ModuleType
@@ -20,44 +20,33 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     """Release workflow that builds and attaches standalone executables.
 
     Extends the base release workflow with a matrix job that builds a
-    single-file executable on every supported operating system, then attaches
-    all of them to the GitHub release created by the base ``publish`` job.
-
-    Two jobs run, in order:
-
-    1. ``executable`` — a matrix job that fans out into one job per OS
-       (Linux, Windows, macOS), each building the project into a single
-       ``pyinstaller`` ``--onefile`` binary and uploading it as a per-OS
-       workflow artifact.
-    2. ``publish`` — the base release job, now gated on ``executable``.
-       It downloads every executable artifact into ``dist/`` and attaches them
-       to the GitHub release alongside the generated changelog.
+    single-file executable for every supported operating system and attaches
+    each one to the GitHub release as a release asset, alongside the
+    generated changelog.
     """
 
     def priority(self) -> float:
         """Return a priority one step after the resources config's.
 
-        Generating the build step imports the project's resources module (via
-        :class:`~pyrig_resources.rig.configs.resources_init.ResourcesInitConfigFile`,
-        see :meth:`resource_modules`), so the resources package must be
-        validated first. Deriving from its priority with
-        :meth:`~pyrig.rig.configs.base.config_file.Priority.decrease` keeps this
-        config validated immediately after it, tracking any change to its
-        priority instead of hard-coding a value.
+        Building the executable requires the project's resources package to
+        already exist, so this config must validate after it. Deriving from
+        its priority instead of hard-coding a value keeps this config's
+        priority in step with any future change to the resources config's own
+        priority.
 
         Returns:
-            The resources config's priority lowered by one ``Priority.STEP``.
+            The resources config's priority lowered by one `Priority.STEP`.
         """
         return Priority.decrease(ResourcesInitConfigFile.I.priority())
 
     def jobs(self) -> dict[str, Any]:
-        """Build the complete jobs configuration for the workflow.
+        """Build the complete set of workflow jobs.
 
-        Prepends the executable build job to the base jobs so it runs before
-        the ``publish`` job that consumes its artifacts.
+        Adds the executable build job to the base release jobs.
 
         Returns:
-            Dict containing the build job followed by the base release jobs.
+            Dict containing the executable build job together with the base
+            release jobs.
         """
         return {
             **self.job_executable(),
@@ -68,11 +57,11 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """Build the matrix job that compiles the executable on every OS.
 
         Runs across the default OS matrix (Linux, Windows, macOS), since
-        ``pyinstaller`` cannot cross-compile and each binary must be built on
+        `pyinstaller` cannot cross-compile and each binary must be built on
         its target platform.
 
         Returns:
-            Job configuration with an OS matrix strategy, a dynamic ``runs-on``
+            Job configuration with an OS matrix strategy, a dynamic `runs-on`
             value, and the build and upload steps.
         """
         return self.job(
@@ -85,11 +74,11 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     def job_publish(self) -> dict[str, Any]:
         """Build the release job, gated on the executable build job.
 
-        Adds a ``needs`` dependency on ``executable`` so the release is
+        Adds a `needs` dependency on `executable` so the release is
         only published once every platform's binary is available to attach.
 
         Returns:
-            The base release job with a ``needs`` dependency added.
+            The base release job with a `needs` dependency added.
         """
         jobs = super().job_publish()
         jobs[self.make_id_from_func(self.job_publish)]["needs"] = [
@@ -114,7 +103,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """Build the ordered steps for the release job.
 
         Extends the base steps with a download step that pulls every platform's
-        executable into ``dist/`` immediately before the release is created.
+        executable into `dist/` immediately before the release is created.
 
         Returns:
             The base publish steps with the executable download step inserted
@@ -135,7 +124,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that compiles the project into a single-file executable.
 
-        Runs ``pyinstaller --onefile`` against the project's entry-point module,
+        Runs `pyinstaller --onefile` against the project's entry-point module,
         naming the binary after the project and the current runner OS so the
         per-platform assets do not collide on the release.
 
@@ -167,15 +156,14 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that uploads the built executable as a workflow artifact.
 
-        Uploads the contents of ``dist/`` under the per-OS
-        :meth:`artifact_name` so the ``publish`` job can later download every
-        platform's binary.
+        Uploads the contents of `dist/` under the per-OS `artifact_name` so
+        the `publish` job can later download every platform's binary.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step using ``actions/upload-artifact@main``.
+            Step using `actions/upload-artifact@main`.
         """
         return self.step(
             step_func=self.step_upload_executable,
@@ -192,11 +180,11 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         *,
         step: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Build a step that downloads every executable artifact into ``dist/``.
+        """Build a step that downloads every executable artifact into `dist/`.
 
         Merges every per-OS executable artifact, matched by the
-        :meth:`artifact_name` glob, into a single ``dist/`` directory so they
-        can be attached to the release with one glob. The narrow prefix avoids
+        `artifact_name` glob, into a single `dist/` directory so they can be
+        attached to the release with one glob. The narrow prefix avoids
         pulling in unrelated artifacts that other actions may name after the
         project.
 
@@ -204,7 +192,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            Step using ``actions/download-artifact@main``.
+            Step using `actions/download-artifact@main`.
         """
         return self.step(
             step_func=self.step_download_executables,
@@ -225,13 +213,13 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """Build the create-release step, attaching the built executables.
 
         Extends the base release step by attaching every binary downloaded into
-        ``dist/`` as a release asset.
+        `dist/` as a release asset.
 
         Args:
             step: Additional keys to merge into the step configuration.
 
         Returns:
-            The base create-release step with ``dist/*`` added as artifacts.
+            The base create-release step with `dist/*` added as artifacts.
         """
         step = super().step_create_release(step=step)
         step["with"]["artifacts"] = (ExecutableBuilder.I.dist_dir() / "*").as_posix()
@@ -242,52 +230,49 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
 
         Combines the project name with the runner OS so each platform's binary
         gets a unique, recognizable, collision-free name (e.g.
-        ``pyrig-executables-Linux``). The OS is resolved at workflow runtime.
+        `pyrig-executables-Linux`). The OS is resolved at workflow runtime.
 
         Returns:
-            The ``<project>-<os>`` name string.
+            The `<project>-<os>` name string.
         """
         return f"{PackageManager.I.project_name()}-{self.insert_os()}"
 
     def artifact_name(self, os: str) -> str:
         """Build the workflow-artifact name for the given runner OS.
 
-        Single source of the ``executable-<os>`` artifact label, shared by the
+        Single source of the `executable-<os>` artifact label, shared by the
         upload step (with the resolved runner OS) and the download step (with
-        ``"*"`` to match every platform). It is deliberately generic and
-        distinct from :meth:`executable_name` so it does not collide with
+        `"*"` to match every platform). It is deliberately generic and
+        distinct from `executable_name` so it does not collide with
         artifacts that other actions name after the project.
 
         Args:
-            os: The runner OS suffix, or ``"*"`` to form the download glob.
+            os: The runner OS suffix, or `"*"` to form the download glob.
 
         Returns:
-            The ``executable-<os>`` artifact name.
+            The `executable-<os>` artifact name.
         """
         return f"executable-{os}"
 
     def insert_os(self) -> str:
-        """Get the ``${{ runner.os }}`` expression.
+        """Get the `${{ runner.os }}` expression.
 
         Returns:
             GitHub Actions expression resolving to the current runner's
-            operating system (e.g. ``Linux``, ``Windows``, ``macOS``).
+            operating system (e.g. `Linux`, `Windows`, `macOS`).
         """
         return self.insert_expression("runner.os")
 
     def resource_modules(self) -> Iterable[ModuleType]:
         """Return the resource modules to bundle into the executable.
 
-        Resolves the project's ``rig/resources`` package via the
-        ``pyrig-resources`` plugin's
-        :class:`~pyrig_resources.rig.configs.resources_init.ResourcesInitConfigFile`
-        and returns its module, which :meth:`step_build_executable` passes to
-        the executable builder as ``--collect-data`` targets. Locating the
-        project's resources is a config concern, so it lives here rather than in
-        the project-agnostic executable builder tool. Override to bundle
+        Resolves the project's `rig/resources` package, the location the
+        `pyrig-resources` plugin scaffolds and validates. Locating the
+        project's resources is a config concern, so it lives here rather than
+        in the project-agnostic executable builder tool. Override to bundle
         additional resource packages.
 
         Returns:
-            The project's resource modules (the ``rig/resources`` package).
+            The project's resource modules (the `rig/resources` package).
         """
         return (ResourcesInitConfigFile.I.module(),)

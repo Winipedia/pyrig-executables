@@ -1,1 +1,1 @@
-"""Package initialization."""
+"""CLI commands for this package."""
