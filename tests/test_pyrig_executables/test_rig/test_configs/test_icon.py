@@ -46,5 +46,5 @@ class TestIconConfigFile:
         """Test method."""
         assert IconConfigFile.I.is_correct() is True
         path = mocker.patch.object(IconConfigFile, "path")
-        path.return_value.exists.return_value = False
+        path.return_value.stat.return_value.st_size = 0
         assert IconConfigFile.I.is_correct() is False
