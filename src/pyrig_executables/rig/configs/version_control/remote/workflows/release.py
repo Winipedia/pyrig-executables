@@ -65,7 +65,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             value, and the build and upload steps.
         """
         return self.job(
-            job_func=self.job_executable,
+            self.job_executable,
             strategy=self.strategy_matrix_os(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_executable(),
@@ -81,8 +81,8 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             The base release job with a `needs` dependency added.
         """
         jobs = super().job_publish()
-        jobs[self.make_id_from_func(self.job_publish)]["needs"] = [
-            self.make_id_from_func(self.job_executable)
+        jobs[self.id_from_method(self.job_publish)]["needs"] = [
+            self.id_from_method(self.job_executable)
         ]
         return jobs
 
@@ -110,7 +110,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             just before the create-release step.
         """
         steps = super().steps_publish()
-        create_release_id = self.make_id_from_func(self.step_create_release)
+        create_release_id = self.id_from_method(self.step_create_release)
         create_release_index = next(
             index for index, step in enumerate(steps) if step["id"] == create_release_id
         )
@@ -135,7 +135,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             Step that runs the executable builder via uv.
         """
         return self.step(
-            step_func=self.step_build_executable,
+            self.step_build_executable,
             run=str(
                 PackageManager.I.run_args(
                     *ExecutableBuilder.I.build_args(
@@ -166,7 +166,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             Step using `actions/upload-artifact@main`.
         """
         return self.step(
-            step_func=self.step_upload_executable,
+            self.step_upload_executable,
             uses="actions/upload-artifact@main",
             with_={
                 "name": self.artifact_name(self.insert_os()),
@@ -195,7 +195,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             Step using `actions/download-artifact@main`.
         """
         return self.step(
-            step_func=self.step_download_executables,
+            self.step_download_executables,
             uses="actions/download-artifact@main",
             with_={
                 "pattern": self.artifact_name("*"),
