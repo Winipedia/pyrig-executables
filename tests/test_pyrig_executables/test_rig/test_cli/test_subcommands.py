@@ -1,16 +1,16 @@
 """Test module."""
 
 from collections.abc import Callable
-from typing import Any
+from types import FunctionType
 
 from pyrig_executables.rig.cli.commands.run import run_main
 from pyrig_executables.rig.cli.subcommands import run
 
 
 def test_run(
-    command_works: Callable[[Callable[..., Any]], None],
-    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
+    command_works: Callable[[FunctionType], bool],
+    command_calls_function: Callable[[FunctionType, FunctionType], bool],
 ) -> None:
     """Test function."""
-    command_works(run)
-    command_calls_function(run, run_main)
+    assert command_works(run)
+    assert command_calls_function(run, run_main)
