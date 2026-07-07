@@ -1,13 +1,13 @@
 [project]
 name = "pyrig-executables"
-version = "3.0.10"
+version = "3.0.11"
 description = "A pyrig plugin to build executables."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "pyrig>=17.0.0",
-    "pyrig-resources>=3.0.0",
-    "pyrig-runtime>=2.0.0",
+    "pyrig>=17.6.0",
+    "pyrig-resources>=3.0.10",
+    "pyrig-runtime>=3.0.5",
 ]
 license = "MIT"
 license-files = [
@@ -53,12 +53,12 @@ dev = [
     "mkdocstrings[python]>=1.0.4",
     "pillow>=12.3.0",
     "pip-audit>=2.10.1",
-    "prek>=0.4.6",
+    "prek>=0.4.8",
     "pyinstaller>=6.21.0",
-    "pyrig>=17.0.0",
-    "pyrig-codecov>=3.0.0",
-    "pyrig-fixtures>=2.0.0",
-    "pyrig-pypi>=3.0.0",
+    "pyrig>=17.6.0",
+    "pyrig-codecov>=3.0.10",
+    "pyrig-fixtures>=2.2.2",
+    "pyrig-pypi>=3.0.10",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.20",
