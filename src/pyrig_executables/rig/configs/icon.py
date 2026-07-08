@@ -22,6 +22,58 @@ class IconConfigFile(DictConfigFile):
     created when missing, so a project's own icon is preserved.
     """
 
+    def _configs(self) -> dict[str, Any]:
+        """Return the required structured content.
+
+        Returns:
+            An empty dict; the icon is a binary file copied verbatim, with no
+            structured content to enforce.
+        """
+        return {}
+
+    def _dump(self, configs: dict[str, Any]) -> None:
+        """Copy this plugin's bundled default icon to the project's icon path.
+
+        Overwrites whatever file is already at the destination.
+
+        Args:
+            configs: Ignored; the icon is a binary file copied verbatim.
+        """
+        del configs
+        shutil.copy(
+            resource_path(name=self.filename(), package=resources),
+            self.path(),
+        )
+
+    def _load(self) -> dict[str, Any]:
+        """Raise -- the icon is binary and should never be loaded.
+
+        Raises:
+            RuntimeError: Always; the icon is never loaded.
+        """
+        msg = "The icon is a binary PNG and should never be loaded."
+        raise RuntimeError(msg)
+
+    def extension(self) -> str:
+        """Return the icon file extension.
+
+        Returns:
+            `"png"`.
+        """
+        return "png"
+
+    def is_correct(self) -> bool:
+        """Return whether the icon file is non-empty.
+
+        Non-emptiness is the only requirement: the bundled default is a valid
+        PNG and any user-provided icon is preserved, so the file's bytes are
+        not otherwise validated.
+
+        Returns:
+            `True` if the icon file has content; `False` if it is empty.
+        """
+        return file_has_content(self.path())
+
     def parent_path(self) -> Path:
         """Return the directory the icon lives in.
 
@@ -38,55 +90,3 @@ class IconConfigFile(DictConfigFile):
             `"icon"`, producing `icon.png`.
         """
         return "icon"
-
-    def extension(self) -> str:
-        """Return the icon file extension.
-
-        Returns:
-            `"png"`.
-        """
-        return "png"
-
-    def _configs(self) -> dict[str, Any]:
-        """Return the required structured content.
-
-        Returns:
-            An empty dict; the icon is a binary file copied verbatim, with no
-            structured content to enforce.
-        """
-        return {}
-
-    def _load(self) -> dict[str, Any]:
-        """Raise -- the icon is binary and should never be loaded.
-
-        Raises:
-            RuntimeError: Always; the icon is never loaded.
-        """
-        msg = "The icon is a binary PNG and should never be loaded."
-        raise RuntimeError(msg)
-
-    def _dump(self, configs: dict[str, Any]) -> None:
-        """Copy this plugin's bundled default icon to the project's icon path.
-
-        Overwrites whatever file is already at the destination.
-
-        Args:
-            configs: Ignored; the icon is a binary file copied verbatim.
-        """
-        del configs
-        shutil.copy(
-            resource_path(name=self.filename(), package=resources),
-            self.path(),
-        )
-
-    def is_correct(self) -> bool:
-        """Return whether the icon file is non-empty.
-
-        Non-emptiness is the only requirement: the bundled default is a valid
-        PNG and any user-provided icon is preserved, so the file's bytes are
-        not otherwise validated.
-
-        Returns:
-            `True` if the icon file has content; `False` if it is empty.
-        """
-        return file_has_content(self.path())

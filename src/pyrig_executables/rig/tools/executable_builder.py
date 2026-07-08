@@ -19,9 +19,17 @@ class ExecutableBuilder(Tool):
     executables are published.
     """
 
-    def name(self) -> str:
-        """Return `'pyinstaller'`."""
-        return "pyinstaller"
+    def dev_dependencies(self) -> tuple[str, ...]:
+        """Return the dev dependencies required to build executables.
+
+        Extends the default with `pillow` so `pyinstaller` can convert a
+        non-native icon image (e.g. PNG) into the per-OS icon format (`.ico`
+        / `.icns`) at build time.
+
+        Returns:
+            `pyinstaller` and `pillow`.
+        """
+        return (*super().dev_dependencies(), "pillow")
 
     def group(self) -> str:
         """Return `Group.PROJECT_INFO`."""
@@ -38,6 +46,20 @@ class ExecutableBuilder(Tool):
     def link_url(self) -> str:
         """Return the GitHub releases page URL where the binaries are published."""
         return RemoteVersionController.I.releases_url()
+
+    def name(self) -> str:
+        """Return `'pyinstaller'`."""
+        return "pyinstaller"
+
+    def version_control_ignore_paths(self) -> tuple[str, ...]:
+        """Return the build artifact paths to exclude from version control.
+
+        Returns:
+            The `pyinstaller` build artifacts: the `dist/` output directory
+            (where the executables are written), the generated `*.spec` files,
+            and the `build/` working directory.
+        """
+        return (f"{self.dist_dir().as_posix()}/", "*.spec", "build/")
 
     def build_args(
         self,
@@ -90,28 +112,6 @@ class ExecutableBuilder(Tool):
             *args,
             entry_point.as_posix(),
         )
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Return the dev dependencies required to build executables.
-
-        Extends the default with `pillow` so `pyinstaller` can convert a
-        non-native icon image (e.g. PNG) into the per-OS icon format (`.ico`
-        / `.icns`) at build time.
-
-        Returns:
-            `pyinstaller` and `pillow`.
-        """
-        return (*super().dev_dependencies(), "pillow")
-
-    def version_control_ignore_paths(self) -> tuple[str, ...]:
-        """Return the build artifact paths to exclude from version control.
-
-        Returns:
-            The `pyinstaller` build artifacts: the `dist/` output directory
-            (where the executables are written), the generated `*.spec` files,
-            and the `build/` working directory.
-        """
-        return (f"{self.dist_dir().as_posix()}/", "*.spec", "build/")
 
     def dist_dir(self) -> Path:
         """Return the directory `pyinstaller` writes built executables to.

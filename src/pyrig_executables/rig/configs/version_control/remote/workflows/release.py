@@ -25,20 +25,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     generated changelog.
     """
 
-    def priority(self) -> float:
-        """Return a priority one step after the resources config's.
-
-        Building the executable requires the project's resources package to
-        already exist, so this config must validate after it. Deriving from
-        its priority instead of hard-coding a value keeps this config's
-        priority in step with any future change to the resources config's own
-        priority.
-
-        Returns:
-            The resources config's priority lowered by one `Priority.STEP`.
-        """
-        return Priority.decrease(ResourcesInitConfigFile.I.priority())
-
     def jobs(self) -> dict[str, Any]:
         """Build the complete set of workflow jobs.
 
@@ -52,6 +38,73 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             **self.job_executable(),
             **super().jobs(),
         }
+
+    def job_publish(self) -> dict[str, Any]:
+        """Build the release job, gated on the executable build job.
+
+        Adds a `needs` dependency on `executable` so the release is
+        only published once every platform's binary is available to attach.
+
+        Returns:
+            The base release job with a `needs` dependency added.
+        """
+        jobs = super().job_publish()
+        jobs[self.id_from_method(self.job_publish)]["needs"] = [
+            self.id_from_method(self.job_executable)
+        ]
+        return jobs
+
+    def steps_publish(self) -> list[dict[str, Any]]:
+        """Build the ordered steps for the release job.
+
+        Extends the base steps with a download step that pulls every platform's
+        executable into `dist/` immediately before the release is created.
+
+        Returns:
+            The base publish steps with the executable download step inserted
+            just before the create-release step.
+        """
+        steps = super().steps_publish()
+        create_release_id = self.id_from_method(self.step_create_release)
+        create_release_index = next(
+            index for index, step in enumerate(steps) if step["id"] == create_release_id
+        )
+        steps.insert(create_release_index, self.step_download_executables())
+        return steps
+
+    def step_create_release(
+        self,
+        *,
+        step: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Build the create-release step, attaching the built executables.
+
+        Extends the base release step by attaching every binary downloaded into
+        `dist/` as a release asset.
+
+        Args:
+            step: Additional keys to merge into the step configuration.
+
+        Returns:
+            The base create-release step with `dist/*` added as artifacts.
+        """
+        step = super().step_create_release(step=step)
+        step["with"]["artifacts"] = (ExecutableBuilder.I.dist_dir() / "*").as_posix()
+        return step
+
+    def priority(self) -> float:
+        """Return a priority one step after the resources config's.
+
+        Building the executable requires the project's resources package to
+        already exist, so this config must validate after it. Deriving from
+        its priority instead of hard-coding a value keeps this config's
+        priority in step with any future change to the resources config's own
+        priority.
+
+        Returns:
+            The resources config's priority lowered by one `Priority.STEP`.
+        """
+        return Priority.decrease(ResourcesInitConfigFile.I.priority())
 
     def job_executable(self) -> dict[str, Any]:
         """Build the matrix job that compiles the executable on every OS.
@@ -71,21 +124,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             steps=self.steps_executable(),
         )
 
-    def job_publish(self) -> dict[str, Any]:
-        """Build the release job, gated on the executable build job.
-
-        Adds a `needs` dependency on `executable` so the release is
-        only published once every platform's binary is available to attach.
-
-        Returns:
-            The base release job with a `needs` dependency added.
-        """
-        jobs = super().job_publish()
-        jobs[self.id_from_method(self.job_publish)]["needs"] = [
-            self.id_from_method(self.job_executable)
-        ]
-        return jobs
-
     def steps_executable(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the executable build job.
 
@@ -98,24 +136,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             self.step_build_executable(),
             self.step_upload_executable(),
         ]
-
-    def steps_publish(self) -> list[dict[str, Any]]:
-        """Build the ordered steps for the release job.
-
-        Extends the base steps with a download step that pulls every platform's
-        executable into `dist/` immediately before the release is created.
-
-        Returns:
-            The base publish steps with the executable download step inserted
-            just before the create-release step.
-        """
-        steps = super().steps_publish()
-        create_release_id = self.id_from_method(self.step_create_release)
-        create_release_index = next(
-            index for index, step in enumerate(steps) if step["id"] == create_release_id
-        )
-        steps.insert(create_release_index, self.step_download_executables())
-        return steps
 
     def step_build_executable(
         self,
@@ -205,38 +225,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             step=step,
         )
 
-    def step_create_release(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Build the create-release step, attaching the built executables.
-
-        Extends the base release step by attaching every binary downloaded into
-        `dist/` as a release asset.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
-
-        Returns:
-            The base create-release step with `dist/*` added as artifacts.
-        """
-        step = super().step_create_release(step=step)
-        step["with"]["artifacts"] = (ExecutableBuilder.I.dist_dir() / "*").as_posix()
-        return step
-
-    def executable_name(self) -> str:
-        """Build the per-OS name of the executable binary and release asset.
-
-        Combines the project name with the runner OS so each platform's binary
-        gets a unique, recognizable, collision-free name (e.g.
-        `pyrig-executables-Linux`). The OS is resolved at workflow runtime.
-
-        Returns:
-            The `<project>-<os>` name string.
-        """
-        return f"{PackageManager.I.project_name()}-{self.insert_os()}"
-
     def artifact_name(self, os: str) -> str:
         """Build the workflow-artifact name for the given runner OS.
 
@@ -253,6 +241,18 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             The `executable-<os>` artifact name.
         """
         return f"executable-{os}"
+
+    def executable_name(self) -> str:
+        """Build the per-OS name of the executable binary and release asset.
+
+        Combines the project name with the runner OS so each platform's binary
+        gets a unique, recognizable, collision-free name (e.g.
+        `pyrig-executables-Linux`). The OS is resolved at workflow runtime.
+
+        Returns:
+            The `<project>-<os>` name string.
+        """
+        return f"{PackageManager.I.project_name()}-{self.insert_os()}"
 
     def insert_os(self) -> str:
         """Get the `${{ runner.os }}` expression.
