@@ -1,4 +1,4 @@
-# pyrig-executables Documentation
+# Home
 
 <!-- ci/cd -->
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-executables/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig-executables/actions/workflows/health_check.yml)
