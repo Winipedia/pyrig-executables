@@ -7,8 +7,8 @@ from types import ModuleType
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
 from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig.rig.tools.version_control.remote import RemoteVersionController
-from pyrig.rig.tools.version_control.version_controller import VersionController
 
 
 class ExecutableBuilder(Tool):
