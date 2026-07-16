@@ -31,8 +31,8 @@ class TestReleaseWorkflowConfigFile:
         assert "executable" in job
         assert len(job) == 1
         assert job["executable"]["if"] == (
-            "${{ github.event.workflow_run.conclusion == 'success' "
-            "&& github.event.workflow_run.event == 'push' }}"
+            """github.event.workflow_run.conclusion == 'success' &&
+github.event.workflow_run.event == 'push'"""
         )
 
     def test_job_publish(self) -> None:
@@ -62,9 +62,14 @@ class TestReleaseWorkflowConfigFile:
         assert ReleaseWorkflowConfigFile.I.step_build_executable() == {
             "name": "Build Executable",
             "id": "build-executable",
-            "run": (
-                "uv run pyinstaller --onefile --name pyrig-executables-${{ runner.os }} --icon src/pyrig_executables/rig/resources/icon.png --collect-data pyrig_executables.rig.resources src/pyrig_executables/main.py"  # noqa: E501
-            ),
+            "run": """uv
+run
+pyinstaller
+--onefile
+--name=pyrig-executables-${{ runner.os }}
+--icon=src/pyrig_executables/rig/resources/icon.png
+--collect-data=pyrig_executables.rig.resources
+src/pyrig_executables/main.py""",
         }
 
     def test_step_upload_executable(self) -> None:
@@ -120,5 +125,5 @@ class TestReleaseWorkflowConfigFile:
         """Test method."""
         modules = list(ReleaseWorkflowConfigFile.I.resource_modules())
         assert [module.__name__ for module in modules] == [
-            "pyrig_executables.rig.resources"
+            "pyrig_executables.rig.resources",
         ]

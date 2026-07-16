@@ -1,113 +1,132 @@
-name: Release
-'on':
-  workflow_run:
-    workflows:
-    - Health Check
-    types:
-    - completed
-    branches:
-    - main
-run-name: Release
-defaults:
-  run:
-    shell: bash
-env:
-  PYTHONDONTWRITEBYTECODE: 1
-  UV_NO_SYNC: 1
-jobs:
-  executable:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event
-      == 'push' }}
-    strategy:
-      matrix:
-        os:
-        - ubuntu-latest
-        - windows-latest
-        - macos-latest
-      fail-fast: true
-    runs-on: ${{ matrix.os }}
-    steps:
-    - name: Checkout Repository
-      id: checkout-repository
-      uses: actions/checkout@main
-    - name: Setup Package Manager
-      id: setup-package-manager
-      uses: astral-sh/setup-uv@main
-      with:
-        python-version: '3.14'
-    - name: Install Dependencies
-      id: install-dependencies
-      run: uv sync
-    - name: Build Executable
-      id: build-executable
-      run: uv run pyinstaller --onefile --name pyrig-executables-${{ runner.os }}
-        --icon src/pyrig_executables/rig/resources/icon.png --collect-data pyrig_executables.rig.resources
-        src/pyrig_executables/main.py
-    - name: Upload Executable
-      id: upload-executable
-      uses: actions/upload-artifact@main
-      with:
-        name: executable-${{ runner.os }}
-        path: dist
-  publish:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event
-      == 'push' }}
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repository
-      id: checkout-repository
-      uses: actions/checkout@main
-    - name: Setup Package Manager
-      id: setup-package-manager
-      uses: astral-sh/setup-uv@main
-      with:
-        python-version: '3.14'
-    - name: Apply Repository Settings
-      id: apply-repository-settings
-      env:
-        GH_TOKEN: ${{ secrets.REPO_TOKEN }}
-      run: jq '.repository' .github/settings.json | gh api --method PATCH "repos/${{
-        github.repository }}" --input -
-    - name: Apply Rulesets
-      id: apply-rulesets
-      env:
-        GH_TOKEN: ${{ secrets.REPO_TOKEN }}
-      run: "REPO=\"${{ github.repository }}\"\njq -c '.rulesets[]' .github/settings.json\
-        \ | while read ruleset; do\n  ID=$(gh api \"repos/$REPO/rulesets\" |\n   \
-        \ jq -r --argjson r \"$ruleset\" '.[] | select(.name==$r.name) | .id')\n \
-        \ if [ -z \"$ID\" ]; then METHOD=\"POST\"; else METHOD=\"PUT\"; fi\n  gh api\
-        \ --method \"$METHOD\" \"repos/$REPO/rulesets${ID:+/$ID}\" --input - <<< \"\
-        $ruleset\"\ndone"
-    - name: Create Tag
-      id: create-tag
-      run: git tag $(uv version --short)
-    - name: Push Tag
-      id: push-tag
-      run: git push origin $(uv version --short)
-    - name: Extract Version
-      id: extract-version
-      run: echo "version=$(uv version --short)" >> $GITHUB_OUTPUT
-    - name: Build Changelog
-      id: build-changelog
-      uses: mikepenz/release-changelog-builder-action@develop
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Download Executables
-      id: download-executables
-      uses: actions/download-artifact@main
-      with:
-        pattern: executable-*
-        path: dist
-        merge-multiple: 'true'
-    - name: Create Release
-      id: create-release
-      uses: ncipollo/release-action@main
-      with:
-        tag: ${{ steps.extract-version.outputs.version }}
-        name: ${{ steps.extract-version.outputs.version }}
-        body: ${{ steps.build-changelog.outputs.changelog }}
-        artifacts: dist/*
-    needs:
-    - executable
+---
+"name": "Release"
+"on":
+  "workflow_run":
+    "branches":
+      - "main"
+    "types":
+      - "completed"
+    "workflows":
+      - "Health Check"
+"defaults":
+  "run":
+    "shell": "bash"
+"env":
+  "PYTHONDONTWRITEBYTECODE": 1
+  "UV_NO_SYNC": 1
+"run-name": "Release"
+"jobs":
+  "executable":
+    "if": |-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    "runs-on": "${{ matrix.os }}"
+    "strategy":
+      "matrix":
+        "os":
+          - "ubuntu-latest"
+          - "windows-latest"
+          - "macos-latest"
+      "fail-fast": true
+    "steps":
+      -
+        "name": "Checkout Repository"
+        "id": "checkout-repository"
+        "uses": "actions/checkout@main"
+      -
+        "name": "Setup Package Manager"
+        "id": "setup-package-manager"
+        "uses": "astral-sh/setup-uv@main"
+        "with":
+          "python-version": "3.14"
+      -
+        "name": "Install Dependencies"
+        "id": "install-dependencies"
+        "run": "uv sync"
+      -
+        "name": "Build Executable"
+        "id": "build-executable"
+        "run": |-
+          uv
+          run
+          pyinstaller
+          --onefile
+          --name=pyrig-executables-${{ runner.os }}
+          --icon=src/pyrig_executables/rig/resources/icon.png
+          --collect-data=pyrig_executables.rig.resources
+          src/pyrig_executables/main.py
+      -
+        "name": "Upload Executable"
+        "id": "upload-executable"
+        "uses": "actions/upload-artifact@main"
+        "with":
+          "name": "executable-${{ runner.os }}"
+          "path": "dist"
+  "publish":
+    "if": |-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    "permissions":
+      "contents": "write"
+    "runs-on": "ubuntu-latest"
+    "steps":
+      -
+        "name": "Checkout Repository"
+        "id": "checkout-repository"
+        "uses": "actions/checkout@main"
+      -
+        "name": "Setup Package Manager"
+        "id": "setup-package-manager"
+        "uses": "astral-sh/setup-uv@main"
+        "with":
+          "python-version": "3.14"
+      -
+        "name": "Apply Repository Settings"
+        "id": "apply-repository-settings"
+        "run": "bash .github/configure.sh settings"
+        "env":
+          "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
+      -
+        "name": "Apply Rulesets"
+        "id": "apply-rulesets"
+        "run": "bash .github/configure.sh rulesets"
+        "env":
+          "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
+      -
+        "name": "Create Tag"
+        "id": "create-tag"
+        "run": "git tag $(uv version --short)"
+      -
+        "name": "Push Tag"
+        "id": "push-tag"
+        "run": "git push origin $(uv version --short)"
+      -
+        "name": "Extract Version"
+        "id": "extract-version"
+        "run": "echo \"version=$(uv version --short)\" >> $GITHUB_OUTPUT"
+      -
+        "name": "Build Changelog"
+        "id": "build-changelog"
+        "uses": "mikepenz/release-changelog-builder-action@develop"
+        "with":
+          "token": "${{ secrets.GITHUB_TOKEN }}"
+      -
+        "name": "Download Executables"
+        "id": "download-executables"
+        "uses": "actions/download-artifact@main"
+        "with":
+          "pattern": "executable-*"
+          "path": "dist"
+          "merge-multiple": "true"
+      -
+        "name": "Create Release"
+        "id": "create-release"
+        "uses": "ncipollo/release-action@main"
+        "with":
+          "body": "${{ steps.build-changelog.outputs.changelog }}"
+          "name": "${{ steps.extract-version.outputs.version }}"
+          "tag": "${{ steps.extract-version.outputs.version }}"
+          "artifacts": "dist/*"
+    "needs":
+      - "executable"
+...

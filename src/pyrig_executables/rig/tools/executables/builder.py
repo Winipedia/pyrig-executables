@@ -6,9 +6,9 @@ from types import ModuleType
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.version_control.controller import VersionController
-from pyrig.rig.tools.version_control.remote import RemoteVersionController
+from pyrig.rig.tools.version_control.remote.controller import RemoteVersionController
 
 
 class ExecutableBuilder(Tool):
@@ -51,7 +51,7 @@ class ExecutableBuilder(Tool):
         """Return `'pyinstaller'`."""
         return "pyinstaller"
 
-    def version_control_ignore_paths(self) -> tuple[str, ...]:
+    def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return the build artifact paths to exclude from version control.
 
         Returns:
@@ -100,14 +100,12 @@ class ExecutableBuilder(Tool):
         collect_data = (
             arg
             for module in resource_modules
-            for arg in ("--collect-data", module.__name__)
+            for arg in (f"--collect-data={module.__name__}",)
         )
         return self.args(
             "--onefile",
-            "--name",
-            name,
-            "--icon",
-            icon.as_posix(),
+            f"--name={name}",
+            f"--icon={icon.as_posix()}",
             *collect_data,
             *args,
             entry_point.as_posix(),

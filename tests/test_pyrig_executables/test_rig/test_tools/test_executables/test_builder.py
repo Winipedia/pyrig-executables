@@ -6,7 +6,7 @@ from pyrig.core.subprocesses import Args
 
 from pyrig_executables import main
 from pyrig_executables.rig import tools
-from pyrig_executables.rig.tools.executable_builder import ExecutableBuilder
+from pyrig_executables.rig.tools.executables.builder import ExecutableBuilder
 
 
 class TestExecutableBuilder:
@@ -50,12 +50,9 @@ class TestExecutableBuilder:
         ) == Args(
             "pyinstaller",
             "--onefile",
-            "--name",
-            "exename",
-            "--icon",
-            "icon.png",
-            "--collect-data",
-            "pyrig_executables.main",
+            "--name=exename",
+            "--icon=icon.png",
+            "--collect-data=pyrig_executables.main",
             "--some-arg",
             "some-val",
             "entry/point.py",
@@ -68,20 +65,16 @@ class TestExecutableBuilder:
         ) == Args(
             "pyinstaller",
             "--onefile",
-            "--name",
-            "exename",
-            "--icon",
-            "icon.png",
-            "--collect-data",
-            "pyrig_executables.main",
-            "--collect-data",
-            "pyrig_executables.rig.tools",
+            "--name=exename",
+            "--icon=icon.png",
+            "--collect-data=pyrig_executables.main",
+            "--collect-data=pyrig_executables.rig.tools",
             "entry/point.py",
         )
 
-    def test_version_control_ignore_paths(self) -> None:
+    def test_version_control_ignore_patterns(self) -> None:
         """Test method."""
-        assert ExecutableBuilder.I.version_control_ignore_paths() == (
+        assert ExecutableBuilder.I.version_control_ignore_patterns() == (
             "dist/",
             "*.spec",
             "build/",

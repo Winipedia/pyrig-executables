@@ -8,12 +8,12 @@ from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile as BaseReleaseWorkflowConfigFile,
 )
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
 from pyrig_executables.rig.configs.icon import IconConfigFile
 from pyrig_executables.rig.configs.main import MainConfigFile
-from pyrig_executables.rig.tools.executable_builder import ExecutableBuilder
+from pyrig_executables.rig.tools.executables.builder import ExecutableBuilder
 
 
 class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
@@ -50,7 +50,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         jobs = super().job_publish()
         jobs[self.id_from_method(self.job_publish)]["needs"] = [
-            self.id_from_method(self.job_executable)
+            self.id_from_method(self.job_executable),
         ]
         return jobs
 
@@ -156,15 +156,15 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step(
             self.step_build_executable,
-            run=str(
+            run="\n".join(
                 PackageManager.I.run_args(
                     *ExecutableBuilder.I.build_args(
                         name=self.executable_name(),
                         entry_point=MainConfigFile.I.path(),
                         icon=IconConfigFile.I.path(),
                         resource_modules=self.resource_modules(),
-                    )
-                )
+                    ),
+                ),
             ),
             step=step,
         )

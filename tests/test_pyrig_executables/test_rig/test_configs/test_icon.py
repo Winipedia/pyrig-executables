@@ -42,9 +42,9 @@ class TestIconConfigFile:
             IconConfigFile.I._dump({})  # noqa: SLF001
             assert icon.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
 
-    def test_is_correct(self, mocker: MockerFixture) -> None:
+    def test_is_correct(self, tmp_path: Path) -> None:
         """Test method."""
-        assert IconConfigFile.I.is_correct() is True
-        path = mocker.patch.object(IconConfigFile, "path")
-        path.return_value.stat.return_value.st_size = 0
-        assert IconConfigFile.I.is_correct() is False
+        with chdir(tmp_path):
+            assert not IconConfigFile.I.is_correct()
+            IconConfigFile.I.create_file()
+            assert IconConfigFile.I.is_correct()
