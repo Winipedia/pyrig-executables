@@ -156,7 +156,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step(
             self.step_build_executable,
-            run="\n".join(
+            run=" \\\n".join(
                 PackageManager.I.run_args(
                     *ExecutableBuilder.I.build_args(
                         name=self.executable_name(),

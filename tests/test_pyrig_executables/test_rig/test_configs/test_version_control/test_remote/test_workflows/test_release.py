@@ -62,13 +62,13 @@ github.event.workflow_run.event == 'push'"""
         assert ReleaseWorkflowConfigFile.I.step_build_executable() == {
             "name": "Build Executable",
             "id": "build-executable",
-            "run": """uv
-run
-pyinstaller
---onefile
---name=pyrig-executables-${{ runner.os }}
---icon=src/pyrig_executables/rig/resources/icon.png
---collect-data=pyrig_executables.rig.resources
+            "run": r"""uv \
+run \
+pyinstaller \
+--onefile \
+--name=pyrig-executables-${{ runner.os }} \
+--icon=src/pyrig_executables/rig/resources/icon.png \
+--collect-data=pyrig_executables.rig.resources \
 src/pyrig_executables/main.py""",
         }
 
