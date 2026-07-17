@@ -45,6 +45,7 @@ class TestIconConfigFile:
     def test_is_correct(self, tmp_path: Path) -> None:
         """Test method."""
         with chdir(tmp_path):
-            assert not IconConfigFile.I.is_correct()
             IconConfigFile.I.create_file()
+            assert not IconConfigFile.I.is_correct()
+            IconConfigFile.I.path().write_bytes(b"\x89PNG\r\n\x1a\n")
             assert IconConfigFile.I.is_correct()
