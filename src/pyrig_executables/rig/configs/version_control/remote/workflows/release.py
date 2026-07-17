@@ -156,16 +156,14 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step(
             self.step_build_executable,
-            run=" \\\n".join(
-                PackageManager.I.run_args(
-                    *ExecutableBuilder.I.build_args(
-                        name=self.executable_name(),
-                        entry_point=MainConfigFile.I.path(),
-                        icon=IconConfigFile.I.path(),
-                        resource_modules=self.resource_modules(),
-                    ),
+            run=PackageManager.I.run_args(
+                *ExecutableBuilder.I.build_args(
+                    name=self.executable_name(),
+                    entry_point=MainConfigFile.I.path(),
+                    icon=IconConfigFile.I.path(),
+                    resource_modules=self.resource_modules(),
                 ),
-            ),
+            ).multiline(),
             step=step,
         )
 

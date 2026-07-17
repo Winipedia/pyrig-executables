@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.core.resources import resource_path
+from pyrig.core.strings import file_has_content
 from pyrig.rig.configs.base.config_file import DictConfigFile
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
@@ -71,7 +72,7 @@ class IconConfigFile(DictConfigFile):
         Returns:
             `True` if the icon file has content; `False` if it is empty.
         """
-        return self.path().exists()
+        return file_has_content(self.path())
 
     def parent_path(self) -> Path:
         """Return the directory the icon lives in.
