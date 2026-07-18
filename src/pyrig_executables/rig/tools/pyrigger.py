@@ -12,13 +12,19 @@ class Pyrigger(BasePyrigger):
     """You can override methods from the base class to customize behavior."""
 
     def setup_steps(self) -> tuple[tuple[Args, dict[str, Any]], ...]:
-        """Override this method to customize the setup steps for the Pyrigger tool."""
+        """Override this method to customize the setup steps for the Pyrigger tool.
+
+        We need to add a second pyrig sync step after the installing dependencies step,
+        so that the test stub for main.py is created
+        """
         steps = list(super().setup_steps())
         sync_args = self.cmd_args(cmd=sync)
         sync_step = next((args, kwargs) for args, kwargs in steps if args == sync_args)
-        second_install_args = PackageManager.I.install_dependencies_args()
-        index = next(
-            (i for i, (args, _) in enumerate(steps) if args == second_install_args),
+        install_args = PackageManager.I.install_dependencies_args()
+        install_step_indexes = (
+            i for i, (args, _) in enumerate(steps) if args == install_args
         )
-        steps.insert(index + 1, sync_step)
+        _ = next(install_step_indexes)
+        second_install_step_index = next(install_step_indexes)
+        steps.insert(second_install_step_index + 1, sync_step)
         return tuple(steps)
