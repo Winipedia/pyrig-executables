@@ -1,8 +1,7 @@
 """Test module."""
 
 from pyrig.rig.cli.subcommands import sync
-
-from pyrig_executables.rig.tools.pyrigger import Pyrigger
+from pyrig.rig.tools.pyrigger import Pyrigger
 
 
 class TestPyrigger:
