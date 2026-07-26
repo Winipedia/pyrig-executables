@@ -9,4 +9,12 @@ def test_main() -> None:
     assert main_func() is None
 
     assert main_func.__doc__ == """Run the project."""
-    assert main_module.__doc__ == """Project entry point."""
+    assert (
+        main_module.__doc__
+        == """Project entry point.
+
+Provides the `main` function and `__main__` guard used as the project's
+executable entry point. Replace `main` with the project's real startup
+logic.
+"""
+    )

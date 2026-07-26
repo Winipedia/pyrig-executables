@@ -1,4 +1,4 @@
-"""Tool wrapper for the pyrig CLI itself, used for self-referential commands."""
+"""Customization of the pyrig CLI tool for projects that build executables."""
 
 from typing import Any
 
@@ -9,13 +9,15 @@ from pyrig.rig.tools.pyrigger import Pyrigger as BasePyrigger
 
 
 class Pyrigger(BasePyrigger):
-    """You can override methods from the base class to customize behavior."""
+    """Pyrig CLI tool wrapper that extends project initialization for this plugin."""
 
     def setup_steps(self) -> tuple[tuple[Args, dict[str, Any]], ...]:
-        """Override this method to customize the setup steps for the Pyrigger tool.
+        """Insert an extra `pyrig sync` step into the base initialization sequence.
 
-        We need to add a second pyrig sync step after the installing dependencies step,
-        so that the test stub for main.py is created
+        A duplicate of the base `pyrig sync` step is inserted right after the
+        *second* occurrence of the dependency-install step, not the first. Without
+        this later pass, the mirrored test stub for the plugin-scaffolded `main.py`
+        is not generated during initialization.
         """
         steps = list(super().setup_steps())
         sync_args = self.cmd_args(cmd=sync)

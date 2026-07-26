@@ -57,8 +57,9 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     def steps_publish(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the release job.
 
-        Extends the base steps with a download step that pulls every platform's
-        executable into `dist/` immediately before the release is created.
+        Inserts a step that downloads every platform's executable immediately
+        before the create-release step, since the release must not be
+        created before every binary is available to attach.
 
         Returns:
             The base publish steps with the executable download step inserted
@@ -144,9 +145,8 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     ) -> dict[str, Any]:
         """Build a step that compiles the project into a single-file executable.
 
-        Runs `pyinstaller --onefile` against the project's entry-point module,
-        naming the binary after the project and the current runner OS so the
-        per-platform assets do not collide on the release.
+        Runs `pyinstaller --onefile` against the project's entry-point
+        module, naming the output binary via `executable_name`.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -202,9 +202,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
 
         Merges every per-OS executable artifact, matched by the
         `artifact_name` glob, into a single `dist/` directory so they can be
-        attached to the release with one glob. The narrow prefix avoids
-        pulling in unrelated artifacts that other actions may name after the
-        project.
+        attached to the release with one glob.
 
         Args:
             step: Additional keys to merge into the step configuration.
@@ -226,14 +224,14 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     def artifact_name(self, os: str) -> str:
         """Build the workflow-artifact name for the given runner OS.
 
-        Single source of the `executable-<os>` artifact label, shared by the
-        upload step (with the resolved runner OS) and the download step (with
-        `"*"` to match every platform). It is deliberately generic and
-        distinct from `executable_name` so it does not collide with
-        artifacts that other actions name after the project.
+        Single source of the `executable-<os>` artifact label. Kept
+        deliberately generic and distinct from `executable_name`, so it does
+        not collide with artifacts that other actions may name after the
+        project.
 
         Args:
-            os: The runner OS suffix, or `"*"` to form the download glob.
+            os: The runner OS suffix, or `"*"` to build a name matching
+                every OS.
 
         Returns:
             The `executable-<os>` artifact name.
@@ -253,11 +251,11 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         return f"{PackageManager.I.project_name()}-{self.insert_os()}"
 
     def insert_os(self) -> str:
-        """Get the `${{ runner.os }}` expression.
+        """Return the expression that resolves to the current runner's OS.
 
         Returns:
-            GitHub Actions expression resolving to the current runner's
-            operating system (e.g. `Linux`, `Windows`, `macOS`).
+            GitHub Actions expression for `runner.os` (e.g. `Linux`,
+            `Windows`, `macOS`).
         """
         return self.insert_expression("runner.os")
 

@@ -15,19 +15,21 @@ from pyrig_executables.rig import resources
 class IconConfigFile(DictConfigFile):
     """Config file that scaffolds the `icon.png` used as the executable's icon.
 
-    The release workflow passes the resulting file's path to
-    `pyinstaller --icon`, which converts the PNG to the per-OS icon format
-    (`.ico` on Windows, `.icns` on macOS; ignored on Linux) at build time. The
-    scaffolded file is a default -- replace it with your own; it is only
-    created when missing, so a project's own icon is preserved.
+    The release workflow bundles this file into the built executable as its
+    icon. The scaffolded file is a default -- replace it with your own; it is
+    created only when missing, so a project's own icon is preserved.
+
+    Note:
+        If the file exists but is empty, validation raises `RuntimeError`
+        rather than automatically restoring the default icon.
     """
 
     def _configs(self) -> dict[str, Any]:
-        """Return the required structured content.
+        """Return the required configuration structure.
 
         Returns:
-            An empty dict; the icon is a binary file copied verbatim, with no
-            structured content to enforce.
+            An empty dict; the icon is a binary file with no structured
+            content to enforce.
         """
         return {}
 
@@ -46,7 +48,7 @@ class IconConfigFile(DictConfigFile):
         )
 
     def _load(self) -> dict[str, Any]:
-        """Raise -- the icon is binary and should never be loaded.
+        """Raise `RuntimeError`; the icon is binary and should never be loaded.
 
         Raises:
             RuntimeError: Always; the icon is never loaded.
@@ -55,19 +57,14 @@ class IconConfigFile(DictConfigFile):
         raise RuntimeError(msg)
 
     def extension(self) -> str:
-        """Return the icon file extension.
-
-        Returns:
-            `"png"`.
-        """
+        """Return `"png"` as the icon's file extension."""
         return "png"
 
     def is_correct(self) -> bool:
         """Return whether the icon file is non-empty.
 
-        Non-emptiness is the only requirement: the bundled default is a valid
-        PNG and any user-provided icon is preserved, so the file's bytes are
-        not otherwise validated.
+        Non-emptiness is the only requirement; the file's bytes are not
+        otherwise validated as a PNG.
 
         Returns:
             `True` if the icon file has content; `False` if it is empty.
@@ -84,9 +81,5 @@ class IconConfigFile(DictConfigFile):
         return ResourcesInitConfigFile.I.parent_path()
 
     def stem(self) -> str:
-        """Return the icon filename stem.
-
-        Returns:
-            `"icon"`, producing `icon.png`.
-        """
+        """Return `"icon"` as the icon's filename stem."""
         return "icon"

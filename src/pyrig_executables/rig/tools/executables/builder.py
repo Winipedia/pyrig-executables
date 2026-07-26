@@ -55,9 +55,8 @@ class ExecutableBuilder(Tool):
         """Return the build artifact paths to exclude from version control.
 
         Returns:
-            The `pyinstaller` build artifacts: the `dist/` output directory
-            (where the executables are written), the generated `*.spec` files,
-            and the `build/` working directory.
+            The `pyinstaller` build artifacts: the `dist/` output directory,
+            the generated `*.spec` files, and the `build/` working directory.
         """
         return (f"{self.dist_dir().as_posix()}/", "*.spec", "build/")
 

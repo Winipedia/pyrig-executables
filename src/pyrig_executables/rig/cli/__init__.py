@@ -1,1 +1,1 @@
-"""CLI commands for this package."""
+"""CLI commands this plugin contributes to a project."""

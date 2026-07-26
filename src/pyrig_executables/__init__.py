@@ -1,8 +1,7 @@
 """Pyrig plugin that builds and publishes standalone project executables.
 
-Installing this package as a dependency extends a pyrig-built project with an
-entry-point and icon to build from, a PyInstaller-based executable builder, a
-release workflow job that compiles and attaches one binary per operating
-system to each GitHub release, and a CLI command to run the entry point
-locally the same way the built executable does.
+Installing this package as a dependency extends a pyrig-built project with
+everything needed to package its entry point as a distributable binary,
+publish one for every supported operating system alongside each release, and
+run that entry point locally the same way the packaged binary does.
 """

@@ -1,4 +1,4 @@
-"""Backend implementations for this package's CLI commands.
+"""Backend implementations for this plugin's CLI commands.
 
 Each module implements exactly one command as a plain callable, decoupled from
 the CLI registration layer. This separation lets the registration layer import
