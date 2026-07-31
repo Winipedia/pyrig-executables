@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any
 
 from pyrig.core.resources import resource_path
-from pyrig.core.strings import file_has_content
 from pyrig.rig.configs.base.config_file import DictConfigFile
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
@@ -20,8 +19,8 @@ class IconConfigFile(DictConfigFile):
     created only when missing, so a project's own icon is preserved.
 
     Note:
-        If the file exists but is empty, validation raises `RuntimeError`
-        rather than automatically restoring the default icon.
+        If the file exists but is not a valid PNG, validation raises
+        `RuntimeError` rather than automatically restoring the default icon.
     """
 
     def _configs(self) -> dict[str, Any]:
@@ -61,15 +60,17 @@ class IconConfigFile(DictConfigFile):
         return "png"
 
     def is_correct(self) -> bool:
-        """Return whether the icon file is non-empty.
+        """Return whether the icon file starts with the PNG signature.
 
-        Non-emptiness is the only requirement; the file's bytes are not
-        otherwise validated as a PNG.
+        Only the 8-byte PNG magic number is checked; the rest of the file's
+        bytes are not otherwise validated.
 
         Returns:
-            `True` if the icon file has content; `False` if it is empty.
+            `True` if the icon file starts with the PNG signature; `False`
+            otherwise.
         """
-        return file_has_content(self.path())
+        with self.path().open("rb") as f:
+            return f.read(8) == b"\x89PNG\r\n\x1a\n"
 
     def parent_path(self) -> Path:
         """Return the directory the icon lives in.
