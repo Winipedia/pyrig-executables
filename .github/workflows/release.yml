@@ -105,12 +105,6 @@
         "id": "extract-version"
         "run": "echo \"version=$(uv version --short)\" >> $GITHUB_OUTPUT"
       -
-        "name": "Build Changelog"
-        "id": "build-changelog"
-        "uses": "mikepenz/release-changelog-builder-action@develop"
-        "with":
-          "token": "${{ secrets.GITHUB_TOKEN }}"
-      -
         "name": "Download Executables"
         "id": "download-executables"
         "uses": "actions/download-artifact@main"
@@ -123,7 +117,7 @@
         "id": "create-release"
         "uses": "ncipollo/release-action@main"
         "with":
-          "body": "${{ steps.build-changelog.outputs.changelog }}"
+          "generateReleaseNotes": "true"
           "name": "${{ steps.extract-version.outputs.version }}"
           "tag": "${{ steps.extract-version.outputs.version }}"
           "artifacts": "dist/*"
