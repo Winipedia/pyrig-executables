@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-executables"
-version = "3.14.18"
+version = "3.14.19"
 description = "A pyrig plugin to build executables."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -48,7 +48,6 @@ dev = [
   "detect-secrets>=1.5.0",
   "mkdocs>=1.6.1",
   "mkdocs-material>=9.7.6",
-  "mkdocs-mermaid2-plugin>=1.2.3",
   "mkdocstrings[python]>=1.0.5",
   "pillow>=12.3.0",
   "pre-commit-hooks",
