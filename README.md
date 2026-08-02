@@ -33,7 +33,7 @@
 [![VersionControlHookManager](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json)](https://github.com/j178/prek)
 [![VersionController](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white)](https://git-scm.com)
 <!-- project-info -->
-[![DocsBuilder](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://Winipedia.github.io/pyrig-executables)
+[![DocsBuilder](https://img.shields.io/badge/Documentation-zensical-326CE5)](https://Winipedia.github.io/pyrig-executables)
 [![ExecutableBuilder](https://img.shields.io/github/downloads/Winipedia/pyrig-executables/total?logo=github&label=downloads)](https://github.com/Winipedia/pyrig-executables/releases)
 [![PackageIndex](https://img.shields.io/pypi/v/pyrig-executables?logo=pypi&logoColor=white)](https://pypi.org/project/pyrig-executables)
 [![ProgrammingLanguage](https://img.shields.io/pypi/pyversions/pyrig-executables)](https://www.python.org)
