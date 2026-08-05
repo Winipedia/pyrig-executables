@@ -73,23 +73,16 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         steps.insert(create_release_index, self.step_download_executables())
         return steps
 
-    def step_create_release(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_create_release(self) -> dict[str, Any]:
         """Build the create-release step, attaching the built executables.
 
         Extends the base release step by attaching every binary downloaded into
         `dist/` as a release asset.
 
-        Args:
-            step: Additional keys to merge into the step configuration.
-
         Returns:
             The base create-release step with `dist/*` added as artifacts.
         """
-        step = super().step_create_release(step=step)
+        step = super().step_create_release()
         step["with"]["artifacts"] = (ExecutableBuilder.I.dist_dir() / "*").as_posix()
         return step
 
@@ -138,11 +131,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             self.step_upload_executable(),
         ]
 
-    def step_build_executable(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_build_executable(self) -> dict[str, Any]:
         """Build a step that compiles the project into a single-file executable.
 
         Runs `pyinstaller --onefile` against the project's entry-point
@@ -164,21 +153,13 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
                     resource_modules=self.resource_modules(),
                 ),
             ).multiline(),
-            step=step,
         )
 
-    def step_upload_executable(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_upload_executable(self) -> dict[str, Any]:
         """Build a step that uploads the built executable as a workflow artifact.
 
         Uploads the contents of `dist/` under the per-OS `artifact_name` so
         the `publish` job can later download every platform's binary.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step using `actions/upload-artifact@main`.
@@ -190,14 +171,9 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
                 "name": self.artifact_name(self.insert_os()),
                 "path": ExecutableBuilder.I.dist_dir().as_posix(),
             },
-            step=step,
         )
 
-    def step_download_executables(
-        self,
-        *,
-        step: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    def step_download_executables(self) -> dict[str, Any]:
         """Build a step that downloads every executable artifact into `dist/`.
 
         Merges every per-OS executable artifact, matched by the
@@ -218,7 +194,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
                 "path": ExecutableBuilder.I.dist_dir().as_posix(),
                 "merge-multiple": "true",
             },
-            step=step,
         )
 
     def artifact_name(self, os: str) -> str:
