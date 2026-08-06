@@ -137,9 +137,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         Runs `pyinstaller --onefile` against the project's entry-point
         module, naming the output binary via `executable_name`.
 
-        Args:
-            step: Additional keys to merge into the step configuration.
-
         Returns:
             Step that runs the executable builder via uv.
         """
@@ -179,9 +176,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         Merges every per-OS executable artifact, matched by the
         `artifact_name` glob, into a single `dist/` directory so they can be
         attached to the release with one glob.
-
-        Args:
-            step: Additional keys to merge into the step configuration.
 
         Returns:
             Step using `actions/download-artifact@main`.
