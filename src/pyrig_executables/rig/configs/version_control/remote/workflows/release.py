@@ -49,8 +49,8 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             The base release job with a `needs` dependency added.
         """
         jobs = super().job_publish()
-        jobs[self.id_from_method(self.job_publish)]["needs"] = [
-            self.id_from_method(self.job_executable),
+        jobs[self.job_id_from_method(self.job_publish)]["needs"] = [
+            self.job_id_from_method(self.job_executable),
         ]
         return jobs
 
@@ -66,7 +66,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             just before the create-release step.
         """
         steps = super().steps_publish()
-        create_release_id = self.id_from_method(self.step_create_release)
+        create_release_id = self.step_id_from_method(self.step_create_release)
         create_release_index = next(
             index for index, step in enumerate(steps) if step["id"] == create_release_id
         )
