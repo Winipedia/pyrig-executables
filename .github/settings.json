@@ -2,6 +2,7 @@
   "repository": {
     "name": "pyrig-executables",
     "description": "A pyrig plugin to build executables.",
+    "homepage": "https://Winipedia.github.io/pyrig-executables",
     "default_branch": "main",
     "delete_branch_on_merge": true,
     "allow_update_branch": true,
