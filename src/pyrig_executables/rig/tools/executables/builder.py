@@ -66,19 +66,24 @@ class ExecutableBuilder(Tool):
         name: str,
         entry_point: Path,
         icon: Path,
-        resource_modules: Iterable[ModuleType],
+        collect_all_modules: Iterable[ModuleType] = (),
+        collect_data_modules: Iterable[ModuleType] = (),
     ) -> Args:
         """Build the `pyinstaller` command that bundles a single-file executable.
 
-        Bundles each module in `resource_modules` with its own
-        `--collect-data` flag rather than pointing `--add-data` at a path.
-        This preserves the package layout so resources stay locatable at
-        runtime through `importlib.resources` in both development and the
-        frozen executable, and sidesteps the platform-specific separator
-        `--add-data` requires. The build runs in console mode by default;
-        pass `--windowed` through `*args` for a GUI application that should
-        run without a console window (this instead produces a `.app` bundle
-        directory on macOS).
+        Bundles each module with its own `--collect-all` or `--collect-data`
+        flag rather than pointing `--add-data` at a path. This preserves the
+        package layout so resources stay locatable at runtime through
+        `importlib.resources` in both development and the frozen
+        executable, and sidesteps the platform-specific separator
+        `--add-data` requires. `--collect-all` also pulls in a module's
+        submodules and any binaries it ships, so it suits modules that are
+        not known to be pure data (e.g. an extension point where callers may
+        pass anything); `--collect-data` is narrower and suits known
+        pure-data packages, avoiding unrelated submodules/binaries. The
+        build runs in console mode by default; pass `--windowed` through
+        `*args` for a GUI application that should run without a console
+        window (this instead produces a `.app` bundle directory on macOS).
 
         Args:
             *args: Additional arguments forwarded to `pyinstaller`, inserted
@@ -89,22 +94,26 @@ class ExecutableBuilder(Tool):
             icon: Path to the icon image. A non-native format (e.g. PNG) is
                 converted to the per-OS format (`.ico` / `.icns`) at build
                 time via Pillow; ignored on Linux.
-            resource_modules: Modules whose data files are bundled, one
-                `--collect-data` flag per module. Where the project keeps its
-                resources is the caller's concern, so this is required.
+            collect_all_modules: Modules to bundle in full (data,
+                submodules, and binaries), one `--collect-all` flag per
+                module.
+            collect_data_modules: Modules whose data files only are
+                bundled, one `--collect-data` flag per module.
 
         Returns:
             Args for the `pyinstaller` command.
         """
+        collect_all = (
+            f"--collect-all={module.__name__}" for module in collect_all_modules
+        )
         collect_data = (
-            arg
-            for module in resource_modules
-            for arg in (f"--collect-data={module.__name__}",)
+            f"--collect-data={module.__name__}" for module in collect_data_modules
         )
         return self.args(
             "--onefile",
             f"--name={name}",
             f"--icon={icon.as_posix()}",
+            *collect_all,
             *collect_data,
             *args,
             entry_point.as_posix(),

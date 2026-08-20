@@ -147,7 +147,8 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
                     name=self.executable_name(),
                     entry_point=MainConfigFile.I.path(),
                     icon=IconConfigFile.I.path(),
-                    resource_modules=self.resource_modules(),
+                    collect_all_modules=self.collect_all_modules(),
+                    collect_data_modules=self.collect_data_modules(),
                 ),
             ).multiline(),
         )
@@ -228,14 +229,27 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.insert_expression("runner.os")
 
-    def resource_modules(self) -> Iterable[ModuleType]:
-        """Return the resource modules to bundle into the executable.
+    def collect_all_modules(self) -> Iterable[ModuleType]:
+        """Return the modules to bundle in full (data, submodules, binaries).
+
+        Empty by default, since the project's own resources package is pure
+        data and is covered by `collect_data_modules` instead. Override to
+        bundle additional modules that ship submodules or binaries alongside
+        their data.
+
+        Returns:
+            No modules, by default.
+        """
+        return ()
+
+    def collect_data_modules(self) -> Iterable[ModuleType]:
+        """Return the resource modules whose data files to bundle into the executable.
 
         Resolves the project's `rig/resources` package, the location the
         `pyrig-resources` plugin scaffolds and validates. Locating the
         project's resources is a config concern, so it lives here rather than
         in the project-agnostic executable builder tool. Override to bundle
-        additional resource packages.
+        additional pure-data resource packages.
 
         Returns:
             The project's resource modules (the `rig/resources` package).

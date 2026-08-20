@@ -104,6 +104,11 @@ the assets do not collide, and uploads it as a workflow artifact. The existing
 `publish` job is gated on it, downloads every platform's binary, and attaches
 them to the GitHub release alongside the changelog.
 
+Override `collect_all_modules` or `collect_data_modules` on
+`ReleaseWorkflowConfigFile` to bundle additional modules into the executable:
+`--collect-all` for modules that ship submodules or binaries alongside their
+data, `--collect-data` for known pure-data packages.
+
 ### Run command
 
 `run` is a CLI command, invoked as `pyrig-executables run`, that executes your

@@ -121,9 +121,14 @@ src/pyrig_executables/main.py""",
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.insert_os() == "${{ runner.os }}"
 
-    def test_resource_modules(self) -> None:
+    def test_collect_all_modules(self) -> None:
         """Test method."""
-        modules = list(ReleaseWorkflowConfigFile.I.resource_modules())
+        modules = ReleaseWorkflowConfigFile.I.collect_all_modules()
+        assert modules == ()
+
+    def test_collect_data_modules(self) -> None:
+        """Test method."""
+        modules = list(ReleaseWorkflowConfigFile.I.collect_data_modules())
         assert [module.__name__ for module in modules] == [
             "pyrig_executables.rig.resources",
         ]

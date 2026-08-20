@@ -46,13 +46,13 @@ class TestExecutableBuilder:
             name="exename",
             entry_point=Path("entry/point.py"),
             icon=Path("icon.png"),
-            resource_modules=[main],
+            collect_all_modules=[main],
         ) == Args(
             "pyinstaller",
             "--onefile",
             "--name=exename",
             "--icon=icon.png",
-            "--collect-data=pyrig_executables.main",
+            "--collect-all=pyrig_executables.main",
             "--some-arg",
             "some-val",
             "entry/point.py",
@@ -61,14 +61,53 @@ class TestExecutableBuilder:
             name="exename",
             entry_point=Path("entry/point.py"),
             icon=Path("icon.png"),
-            resource_modules=[main, tools],
+            collect_all_modules=[main, tools],
+        ) == Args(
+            "pyinstaller",
+            "--onefile",
+            "--name=exename",
+            "--icon=icon.png",
+            "--collect-all=pyrig_executables.main",
+            "--collect-all=pyrig_executables.rig.tools",
+            "entry/point.py",
+        )
+        assert ExecutableBuilder.I.build_args(
+            name="exename",
+            entry_point=Path("entry/point.py"),
+            icon=Path("icon.png"),
+            collect_data_modules=[main],
         ) == Args(
             "pyinstaller",
             "--onefile",
             "--name=exename",
             "--icon=icon.png",
             "--collect-data=pyrig_executables.main",
+            "entry/point.py",
+        )
+        assert ExecutableBuilder.I.build_args(
+            name="exename",
+            entry_point=Path("entry/point.py"),
+            icon=Path("icon.png"),
+            collect_all_modules=[main],
+            collect_data_modules=[tools],
+        ) == Args(
+            "pyinstaller",
+            "--onefile",
+            "--name=exename",
+            "--icon=icon.png",
+            "--collect-all=pyrig_executables.main",
             "--collect-data=pyrig_executables.rig.tools",
+            "entry/point.py",
+        )
+        assert ExecutableBuilder.I.build_args(
+            name="exename",
+            entry_point=Path("entry/point.py"),
+            icon=Path("icon.png"),
+        ) == Args(
+            "pyinstaller",
+            "--onefile",
+            "--name=exename",
+            "--icon=icon.png",
             "entry/point.py",
         )
 
