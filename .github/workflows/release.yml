@@ -33,6 +33,8 @@
         "name": "Checkout Repository"
         "id": "checkout-repository"
         "uses": "actions/checkout@main"
+        "with":
+          "persist-credentials": false
       -
         "name": "Setup Package Manager"
         "id": "setup-package-manager"
@@ -74,6 +76,8 @@
         "name": "Checkout Repository"
         "id": "checkout-repository"
         "uses": "actions/checkout@main"
+        "with":
+          "persist-credentials": false
       -
         "name": "Setup Package Manager"
         "id": "setup-package-manager"
@@ -87,18 +91,6 @@
         "env":
           "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
       -
-        "name": "Create Tag"
-        "id": "create-tag"
-        "run": "git tag $(uv version --short)"
-      -
-        "name": "Push Tag"
-        "id": "push-tag"
-        "run": "git push origin $(uv version --short)"
-      -
-        "name": "Extract Version"
-        "id": "extract-version"
-        "run": "echo \"version=$(uv version --short)\" >> $GITHUB_OUTPUT"
-      -
         "name": "Download Executables"
         "id": "download-executables"
         "uses": "actions/download-artifact@main"
@@ -109,12 +101,16 @@
       -
         "name": "Create Release"
         "id": "create-release"
-        "uses": "ncipollo/release-action@main"
-        "with":
-          "generateReleaseNotes": "true"
-          "name": "${{ steps.extract-version.outputs.version }}"
-          "tag": "${{ steps.extract-version.outputs.version }}"
-          "artifacts": "dist/*"
+        "run": |-
+          gh \
+          release \
+          create \
+          $(uv version --short) \
+          dist/* \
+          --title=$(uv version --short) \
+          --generate-notes
+        "env":
+          "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
     "needs":
       - "executable"
 ...

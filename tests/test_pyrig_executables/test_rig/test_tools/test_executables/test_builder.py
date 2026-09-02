@@ -114,11 +114,6 @@ class TestExecutableBuilder:
     def test_version_control_ignore_patterns(self) -> None:
         """Test method."""
         assert ExecutableBuilder.I.version_control_ignore_patterns() == (
-            "dist/",
             "*.spec",
             "build/",
         )
-
-    def test_dist_dir(self) -> None:
-        """Test method."""
-        assert ExecutableBuilder.I.dist_dir() == Path("dist")

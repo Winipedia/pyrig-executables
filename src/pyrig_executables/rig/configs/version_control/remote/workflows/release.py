@@ -73,19 +73,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         steps.insert(create_release_index, self.step_download_executables())
         return steps
 
-    def step_create_release(self) -> dict[str, Any]:
-        """Build the create-release step, attaching the built executables.
-
-        Extends the base release step by attaching every binary downloaded into
-        `dist/` as a release asset.
-
-        Returns:
-            The base create-release step with `dist/*` added as artifacts.
-        """
-        step = super().step_create_release()
-        step["with"]["artifacts"] = (ExecutableBuilder.I.dist_dir() / "*").as_posix()
-        return step
-
     def priority(self) -> float:
         """Return a priority one step after the resources config's.
 
@@ -167,7 +154,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             uses="actions/upload-artifact@main",
             with_={
                 "name": self.artifact_name(self.insert_os()),
-                "path": ExecutableBuilder.I.dist_dir().as_posix(),
+                "path": PackageManager.I.dist_dir().as_posix(),
             },
         )
 
@@ -186,7 +173,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             uses="actions/download-artifact@main",
             with_={
                 "pattern": self.artifact_name("*"),
-                "path": ExecutableBuilder.I.dist_dir().as_posix(),
+                "path": PackageManager.I.dist_dir().as_posix(),
                 "merge-multiple": "true",
             },
         )

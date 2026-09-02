@@ -58,7 +58,7 @@ class ExecutableBuilder(Tool):
             The `pyinstaller` build artifacts: the `dist/` output directory,
             the generated `*.spec` files, and the `build/` working directory.
         """
-        return (f"{self.dist_dir().as_posix()}/", "*.spec", "build/")
+        return ("*.spec", "build/")
 
     def build_args(
         self,
@@ -118,14 +118,3 @@ class ExecutableBuilder(Tool):
             *args,
             entry_point.as_posix(),
         )
-
-    def dist_dir(self) -> Path:
-        """Return the directory `pyinstaller` writes built executables to.
-
-        Single source of truth for the output location, so it never drifts
-        out of sync with other places that need it.
-
-        Returns:
-            The `dist` output directory, relative to the project root.
-        """
-        return Path("dist")

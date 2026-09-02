@@ -5,6 +5,9 @@ from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 from pyrig_executables.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
+from pyrig_executables.rig.tools.version_control.remote.controller import (
+    RemoteVersionController,
+)
 
 
 class TestReleaseWorkflowConfigFile:
@@ -97,11 +100,37 @@ src/pyrig_executables/main.py""",
             },
         }
 
-    def test_step_create_release(self) -> None:
-        """Test method."""
-        step = ReleaseWorkflowConfigFile.I.step_create_release()
-        assert step["id"] == "create-release"
-        assert step["with"]["artifacts"] == "dist/*"
+    def test_create_release_args(self) -> None:
+        """Test that executable artifacts are release arguments."""
+        assert tuple(RemoteVersionController.I.create_release_args(tag="v1.2.3")) == (
+            "gh",
+            "release",
+            "create",
+            "v1.2.3",
+            "dist/*",
+            "--title=v1.2.3",
+            "--generate-notes",
+        )
+
+    def test_create_release_args_preserves_additional_args(self) -> None:
+        """Test that caller arguments and files are preserved."""
+        assert tuple(
+            RemoteVersionController.I.create_release_args(
+                "--draft",
+                tag="v1.2.3",
+                files=("package.zip",),
+            ),
+        ) == (
+            "gh",
+            "release",
+            "create",
+            "v1.2.3",
+            "dist/*",
+            "package.zip",
+            "--title=v1.2.3",
+            "--generate-notes",
+            "--draft",
+        )
 
     def test_executable_name(self) -> None:
         """Test method."""
