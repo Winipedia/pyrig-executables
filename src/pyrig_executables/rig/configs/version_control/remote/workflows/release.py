@@ -101,6 +101,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         return self.job(
             self.job_executable,
             strategy=self.strategy_matrix_os(),
+            permissions=self.permission_contents(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_executable(),
         )

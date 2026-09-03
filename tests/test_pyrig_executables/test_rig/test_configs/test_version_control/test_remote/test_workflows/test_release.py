@@ -33,6 +33,7 @@ class TestReleaseWorkflowConfigFile:
         assert isinstance(job, dict)
         assert "executable" in job
         assert len(job) == 1
+        assert job["executable"]["permissions"] == {"contents": "read"}
         assert job["executable"]["if"] == (
             """github.event.workflow_run.conclusion == 'success' &&
 github.event.workflow_run.event == 'push'"""

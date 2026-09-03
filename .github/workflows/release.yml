@@ -8,6 +8,10 @@
       - "completed"
     "workflows":
       - "Health Check"
+"permissions": {}
+"concurrency":
+  "group": "${{ github.workflow }}-${{ github.ref }}"
+  "cancel-in-progress": false
 "defaults":
   "run":
     "shell": "bash"
@@ -17,6 +21,9 @@
 "run-name": "Release"
 "jobs":
   "executable":
+    "name": "Executable"
+    "permissions":
+      "contents": "read"
     "if": |-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push'
@@ -65,11 +72,12 @@
           "name": "executable-${{ runner.os }}"
           "path": "dist"
   "publish":
+    "name": "Publish"
+    "permissions":
+      "contents": "write"
     "if": |-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push'
-    "permissions":
-      "contents": "write"
     "runs-on": "ubuntu-latest"
     "steps":
       -
