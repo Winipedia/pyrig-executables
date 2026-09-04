@@ -34,10 +34,7 @@ class TestReleaseWorkflowConfigFile:
         assert "executable" in job
         assert len(job) == 1
         assert job["executable"]["permissions"] == {"contents": "read"}
-        assert job["executable"]["if"] == (
-            """github.event.workflow_run.conclusion == 'success' &&
-github.event.workflow_run.event == 'push'"""
-        )
+        assert "if" not in job["executable"]
 
     def test_job_publish(self) -> None:
         """Test method."""
