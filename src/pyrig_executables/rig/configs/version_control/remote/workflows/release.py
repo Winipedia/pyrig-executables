@@ -42,17 +42,20 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     def job_publish(self) -> dict[str, Any]:
         """Build the release job, gated on the executable build job.
 
-        Adds a `needs` dependency on `executable` so the release is
-        only published once every platform's binary is available to attach.
+        Adds a `needs` dependency on `executable`, alongside the base
+        class's own `needs`, so the release is only published once the
+        health check has passed AND every platform's binary is available
+        to attach.
 
         Returns:
-            The base release job with a `needs` dependency added.
+            The base release job with the `executable` dependency appended
+            to its existing `needs`.
         """
-        jobs = super().job_publish()
-        jobs[self.job_id_from_method(self.job_publish)]["needs"] = [
+        job = super().job_publish()
+        job[self.job_id_from_method(self.job_publish)]["needs"].append(
             self.job_id_from_method(self.job_executable),
-        ]
-        return jobs
+        )
+        return job
 
     def steps_publish(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the release job.

@@ -41,7 +41,7 @@ class TestReleaseWorkflowConfigFile:
         job = ReleaseWorkflowConfigFile.I.job_publish()
         assert isinstance(job, dict)
         assert "publish" in job
-        assert job["publish"]["needs"] == ["executable"]
+        assert job["publish"]["needs"] == ["health-check", "executable"]
 
     def test_steps_executable(self) -> None:
         """Test method."""
