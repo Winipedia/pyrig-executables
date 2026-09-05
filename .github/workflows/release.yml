@@ -79,7 +79,6 @@
       - "health-check"
       - "executable"
     "runs-on": "ubuntu-latest"
-    "environment": "publish"
     "steps":
       -
         "name": "Checkout Repository"
@@ -93,12 +92,6 @@
         "uses": "astral-sh/setup-uv@main"
         "with":
           "python-version": "3.14"
-      -
-        "name": "Configure Repository"
-        "id": "configure-repository"
-        "run": "bash .github/configure.sh"
-        "env":
-          "GH_TOKEN": "${{ secrets.REPO_TOKEN }}"
       -
         "name": "Download Executables"
         "id": "download-executables"
