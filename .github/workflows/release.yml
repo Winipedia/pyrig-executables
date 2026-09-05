@@ -79,6 +79,7 @@
       - "health-check"
       - "executable"
     "runs-on": "ubuntu-latest"
+    "environment": "publish"
     "steps":
       -
         "name": "Checkout Repository"
