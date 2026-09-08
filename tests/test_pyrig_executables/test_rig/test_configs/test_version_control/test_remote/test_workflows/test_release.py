@@ -67,10 +67,13 @@ class TestReleaseWorkflowConfigFile:
 run \
 pyinstaller \
 --onefile \
---name=pyrig-executables-${{ runner.os }} \
+--name=pyrig-executables-"${OS}" \
 --icon=src/pyrig_executables/rig/resources/icon.png \
 --collect-data=pyrig_executables.rig.resources \
 src/pyrig_executables/main.py""",
+            "env": {
+                "OS": "${{ runner.os }}",
+            },
         }
 
     def test_step_upload_executable(self) -> None:
@@ -78,7 +81,7 @@ src/pyrig_executables/main.py""",
         assert ReleaseWorkflowConfigFile.I.step_upload_executable() == {
             "name": "Upload Executable",
             "id": "upload-executable",
-            "uses": "actions/upload-artifact@main",
+            "uses": f"actions/upload-artifact@{ReleaseWorkflowConfigFile.I.upload_artifact_action_sha()}",  # noqa: E501
             "with": {
                 "name": "executable-${{ runner.os }}",
                 "path": "dist",
@@ -90,7 +93,7 @@ src/pyrig_executables/main.py""",
         assert ReleaseWorkflowConfigFile.I.step_download_executables() == {
             "name": "Download Executables",
             "id": "download-executables",
-            "uses": "actions/download-artifact@main",
+            "uses": f"actions/download-artifact@{ReleaseWorkflowConfigFile.I.download_artifact_action_sha()}",  # noqa: E501
             "with": {
                 "pattern": "executable-*",
                 "path": "dist",
@@ -130,13 +133,6 @@ src/pyrig_executables/main.py""",
             "--draft",
         )
 
-    def test_executable_name(self) -> None:
-        """Test method."""
-        assert (
-            ReleaseWorkflowConfigFile.I.executable_name()
-            == "pyrig-executables-${{ runner.os }}"
-        )
-
     def test_artifact_name(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.artifact_name("${{ runner.os }}") == (
@@ -159,3 +155,31 @@ src/pyrig_executables/main.py""",
         assert [module.__name__ for module in modules] == [
             "pyrig_executables.rig.resources",
         ]
+
+    def test_upload_artifact_action_sha(self) -> None:
+        """Test method."""
+        assert isinstance(
+            ReleaseWorkflowConfigFile.I.upload_artifact_action_sha(),
+            str,
+        )
+
+    def test_upload_artifact_action(self) -> None:
+        """Test method."""
+        assert (
+            ReleaseWorkflowConfigFile.I.upload_artifact_action()
+            == "actions/upload-artifact"
+        )
+
+    def test_download_artifact_action_sha(self) -> None:
+        """Test method."""
+        assert isinstance(
+            ReleaseWorkflowConfigFile.I.download_artifact_action_sha(),
+            str,
+        )
+
+    def test_download_artifact_action(self) -> None:
+        """Test method."""
+        assert (
+            ReleaseWorkflowConfigFile.I.download_artifact_action()
+            == "actions/download-artifact"
+        )

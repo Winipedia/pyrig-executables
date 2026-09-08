@@ -131,17 +131,21 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         Returns:
             Step that runs the executable builder via uv.
         """
+        os_var = "OS"
         return self.step(
             self.step_build_executable,
             run=PackageManager.I.run_args(
                 *ExecutableBuilder.I.build_args(
-                    name=self.executable_name(),
+                    name=f"{PackageManager.I.project_name()}-{self.insert_parameter_expansion(os_var)}",
                     entry_point=MainConfigFile.I.path(),
                     icon=IconConfigFile.I.path(),
                     collect_all_modules=self.collect_all_modules(),
                     collect_data_modules=self.collect_data_modules(),
                 ),
             ).multiline(),
+            env={
+                os_var: self.insert_os(),
+            },
         )
 
     def step_upload_executable(self) -> dict[str, Any]:
@@ -151,16 +155,24 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         the `publish` job can later download every platform's binary.
 
         Returns:
-            Step using `actions/upload-artifact@main`.
+            Step using `actions/upload-artifact@<SHA>`.
         """
         return self.step(
             self.step_upload_executable,
-            uses="actions/upload-artifact@main",
+            uses=f"{self.upload_artifact_action()}@{self.upload_artifact_action_sha()}",
             with_={
                 "name": self.artifact_name(self.insert_os()),
                 "path": PackageManager.I.dist_dir().as_posix(),
             },
         )
+
+    def upload_artifact_action_sha(self) -> str:
+        """Return the SHA of the action used for uploading artifacts."""
+        return "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"  # pragma: allowlist secret
+
+    def upload_artifact_action(self) -> str:
+        """Return the action used for uploading artifacts."""
+        return "actions/upload-artifact"
 
     def step_download_executables(self) -> dict[str, Any]:
         """Build a step that downloads every executable artifact into `dist/`.
@@ -170,17 +182,25 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         attached to the release with one glob.
 
         Returns:
-            Step using `actions/download-artifact@main`.
+            Step using `actions/download-artifact@<SHA>`.
         """
         return self.step(
             self.step_download_executables,
-            uses="actions/download-artifact@main",
+            uses=f"{self.download_artifact_action()}@{self.download_artifact_action_sha()}",
             with_={
                 "pattern": self.artifact_name("*"),
                 "path": PackageManager.I.dist_dir().as_posix(),
                 "merge-multiple": "true",
             },
         )
+
+    def download_artifact_action_sha(self) -> str:
+        """Return the SHA of the action used for downloading artifacts."""
+        return "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c"  # pragma: allowlist secret
+
+    def download_artifact_action(self) -> str:
+        """Return the action used for downloading artifacts."""
+        return "actions/download-artifact"
 
     def artifact_name(self, os: str) -> str:
         """Build the workflow-artifact name for the given runner OS.
@@ -198,18 +218,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             The `executable-<os>` artifact name.
         """
         return f"executable-{os}"
-
-    def executable_name(self) -> str:
-        """Build the per-OS name of the executable binary and release asset.
-
-        Combines the project name with the runner OS so each platform's binary
-        gets a unique, recognizable, collision-free name (e.g.
-        `pyrig-executables-Linux`). The OS is resolved at workflow runtime.
-
-        Returns:
-            The `<project>-<os>` name string.
-        """
-        return f"{PackageManager.I.project_name()}-{self.insert_os()}"
 
     def insert_os(self) -> str:
         """Return the expression that resolves to the current runner's OS.

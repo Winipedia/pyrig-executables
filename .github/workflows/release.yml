@@ -53,14 +53,16 @@
           run \
           pyinstaller \
           --onefile \
-          --name=pyrig-executables-${{ runner.os }} \
+          --name=pyrig-executables-"${OS}" \
           --icon=src/pyrig_executables/rig/resources/icon.png \
           --collect-data=pyrig_executables.rig.resources \
           src/pyrig_executables/main.py
+        "env":
+          "OS": "${{ runner.os }}"
       -
         "name": "Upload Executable"
         "id": "upload-executable"
-        "uses": "actions/upload-artifact@main"
+        "uses": "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
         "with":
           "name": "executable-${{ runner.os }}"
           "path": "dist"
@@ -93,9 +95,15 @@
         "with":
           "python-version": "3.14"
       -
+        "name": "Extract Version"
+        "id": "extract-version"
+        "run": |-
+          VERSION="$(uv version --short)"
+          echo version="${VERSION}" >> "${GITHUB_OUTPUT}"
+      -
         "name": "Download Executables"
         "id": "download-executables"
-        "uses": "actions/download-artifact@main"
+        "uses": "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c"
         "with":
           "pattern": "executable-*"
           "path": "dist"
@@ -107,12 +115,13 @@
           gh \
           release \
           create \
-          $(uv version --short) \
+          "${VERSION}" \
           dist/* \
-          --title=$(uv version --short) \
+          --title="${VERSION}" \
           --generate-notes
         "env":
           "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
+          "VERSION": "${{ steps.extract-version.outputs.version }}"
   "deploy":
     "name": "Deploy"
     "permissions":
