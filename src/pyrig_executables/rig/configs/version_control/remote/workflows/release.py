@@ -4,6 +4,7 @@ from collections.abc import Iterable
 from types import ModuleType
 from typing import Any
 
+from pyrig.core.resources import resource_content
 from pyrig.rig.configs.base.config_file import Priority
 from pyrig.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile as BaseReleaseWorkflowConfigFile,
@@ -11,6 +12,7 @@ from pyrig.rig.configs.version_control.remote.workflows.release import (
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
+from pyrig_executables.rig import resources
 from pyrig_executables.rig.configs.icon import IconConfigFile
 from pyrig_executables.rig.configs.main import MainConfigFile
 from pyrig_executables.rig.tools.executables.builder import ExecutableBuilder
@@ -167,8 +169,15 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         )
 
     def upload_artifact_action_sha(self) -> str:
-        """Return the SHA of the action used for uploading artifacts."""
-        return "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"  # pragma: allowlist secret
+        """Return the pinned commit SHA for `actions/upload-artifact`.
+
+        Returns:
+            Commit SHA `actions/upload-artifact` is pinned to.
+        """
+        return resource_content(
+            self.upload_artifact_action_sha.__name__.upper(),
+            resources,
+        ).strip()
 
     def upload_artifact_action(self) -> str:
         """Return the pinned action used for uploading artifacts."""
@@ -195,8 +204,15 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         )
 
     def download_artifact_action_sha(self) -> str:
-        """Return the SHA of the action used for downloading artifacts."""
-        return "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c"  # pragma: allowlist secret
+        """Return the pinned commit SHA for `actions/download-artifact`.
+
+        Returns:
+            Commit SHA `actions/download-artifact` is pinned to.
+        """
+        return resource_content(
+            self.download_artifact_action_sha.__name__.upper(),
+            resources,
+        ).strip()
 
     def download_artifact_action(self) -> str:
         """Return the pinned action used for downloading artifacts."""

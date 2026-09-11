@@ -1,7 +1,9 @@
 """Test module."""
 
+from pyrig.core.resources import resource_content
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
+from pyrig_executables.rig import resources
 from pyrig_executables.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
@@ -158,9 +160,8 @@ src/pyrig_executables/main.py""",
 
     def test_upload_artifact_action_sha(self) -> None:
         """Test method."""
-        assert isinstance(
-            ReleaseWorkflowConfigFile.I.upload_artifact_action_sha(),
-            str,
+        assert ReleaseWorkflowConfigFile.I.upload_artifact_action_sha() == (
+            resource_content("UPLOAD_ARTIFACT_ACTION_SHA", resources).strip()
         )
 
     def test_upload_artifact_action(self) -> None:
@@ -172,9 +173,8 @@ src/pyrig_executables/main.py""",
 
     def test_download_artifact_action_sha(self) -> None:
         """Test method."""
-        assert isinstance(
-            ReleaseWorkflowConfigFile.I.download_artifact_action_sha(),
-            str,
+        assert ReleaseWorkflowConfigFile.I.download_artifact_action_sha() == (
+            resource_content("DOWNLOAD_ARTIFACT_ACTION_SHA", resources).strip()
         )
 
     def test_download_artifact_action(self) -> None:
