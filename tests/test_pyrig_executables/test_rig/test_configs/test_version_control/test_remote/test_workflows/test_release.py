@@ -81,7 +81,7 @@ src/pyrig_executables/main.py""",
         assert ReleaseWorkflowConfigFile.I.step_upload_executable() == {
             "name": "Upload Executable",
             "id": "upload-executable",
-            "uses": f"actions/upload-artifact@{ReleaseWorkflowConfigFile.I.upload_artifact_action_sha()}",  # noqa: E501
+            "uses": ReleaseWorkflowConfigFile.I.upload_artifact_action(),
             "with": {
                 "name": "executable-${{ runner.os }}",
                 "path": "dist",
@@ -93,7 +93,7 @@ src/pyrig_executables/main.py""",
         assert ReleaseWorkflowConfigFile.I.step_download_executables() == {
             "name": "Download Executables",
             "id": "download-executables",
-            "uses": f"actions/download-artifact@{ReleaseWorkflowConfigFile.I.download_artifact_action_sha()}",  # noqa: E501
+            "uses": ReleaseWorkflowConfigFile.I.download_artifact_action(),
             "with": {
                 "pattern": "executable-*",
                 "path": "dist",
@@ -165,9 +165,9 @@ src/pyrig_executables/main.py""",
 
     def test_upload_artifact_action(self) -> None:
         """Test method."""
-        assert (
-            ReleaseWorkflowConfigFile.I.upload_artifact_action()
-            == "actions/upload-artifact"
+        assert ReleaseWorkflowConfigFile.I.upload_artifact_action() == (
+            "actions/upload-artifact@"
+            f"{ReleaseWorkflowConfigFile.I.upload_artifact_action_sha()}"
         )
 
     def test_download_artifact_action_sha(self) -> None:
@@ -179,7 +179,7 @@ src/pyrig_executables/main.py""",
 
     def test_download_artifact_action(self) -> None:
         """Test method."""
-        assert (
-            ReleaseWorkflowConfigFile.I.download_artifact_action()
-            == "actions/download-artifact"
+        assert ReleaseWorkflowConfigFile.I.download_artifact_action() == (
+            "actions/download-artifact@"
+            f"{ReleaseWorkflowConfigFile.I.download_artifact_action_sha()}"
         )

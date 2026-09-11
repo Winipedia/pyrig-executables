@@ -159,7 +159,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step(
             self.step_upload_executable,
-            uses=f"{self.upload_artifact_action()}@{self.upload_artifact_action_sha()}",
+            uses=self.upload_artifact_action(),
             with_={
                 "name": self.artifact_name(self.insert_os()),
                 "path": PackageManager.I.dist_dir().as_posix(),
@@ -171,8 +171,8 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         return "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"  # pragma: allowlist secret
 
     def upload_artifact_action(self) -> str:
-        """Return the action used for uploading artifacts."""
-        return "actions/upload-artifact"
+        """Return the pinned action used for uploading artifacts."""
+        return f"actions/upload-artifact@{self.upload_artifact_action_sha()}"
 
     def step_download_executables(self) -> dict[str, Any]:
         """Build a step that downloads every executable artifact into `dist/`.
@@ -186,7 +186,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step(
             self.step_download_executables,
-            uses=f"{self.download_artifact_action()}@{self.download_artifact_action_sha()}",
+            uses=self.download_artifact_action(),
             with_={
                 "pattern": self.artifact_name("*"),
                 "path": PackageManager.I.dist_dir().as_posix(),
@@ -199,8 +199,8 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         return "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c"  # pragma: allowlist secret
 
     def download_artifact_action(self) -> str:
-        """Return the action used for downloading artifacts."""
-        return "actions/download-artifact"
+        """Return the pinned action used for downloading artifacts."""
+        return f"actions/download-artifact@{self.download_artifact_action_sha()}"
 
     def artifact_name(self, os: str) -> str:
         """Build the workflow-artifact name for the given runner OS.
