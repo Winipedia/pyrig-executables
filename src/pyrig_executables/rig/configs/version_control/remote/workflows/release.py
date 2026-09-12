@@ -161,27 +161,26 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step(
             self.step_upload_executable,
-            uses=self.upload_artifact_action(),
+            uses=(
+                "actions/upload-artifact",
+                self.upload_artifact_action_ref(),
+            ),
             with_={
                 "name": self.artifact_name(self.insert_os()),
                 "path": PackageManager.I.dist_dir().as_posix(),
             },
         )
 
-    def upload_artifact_action_sha(self) -> str:
+    def upload_artifact_action_ref(self) -> str:
         """Return the pinned commit SHA for `actions/upload-artifact`.
 
         Returns:
             Commit SHA `actions/upload-artifact` is pinned to.
         """
         return resource_content(
-            self.upload_artifact_action_sha.__name__.upper(),
+            self.upload_artifact_action_ref.__name__.upper(),
             resources,
         ).strip()
-
-    def upload_artifact_action(self) -> str:
-        """Return the pinned action used for uploading artifacts."""
-        return f"actions/upload-artifact@{self.upload_artifact_action_sha()}"
 
     def step_download_executables(self) -> dict[str, Any]:
         """Build a step that downloads every executable artifact into `dist/`.
@@ -195,7 +194,10 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step(
             self.step_download_executables,
-            uses=self.download_artifact_action(),
+            uses=(
+                "actions/download-artifact",
+                self.download_artifact_action_ref(),
+            ),
             with_={
                 "pattern": self.artifact_name("*"),
                 "path": PackageManager.I.dist_dir().as_posix(),
@@ -203,20 +205,16 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             },
         )
 
-    def download_artifact_action_sha(self) -> str:
+    def download_artifact_action_ref(self) -> str:
         """Return the pinned commit SHA for `actions/download-artifact`.
 
         Returns:
             Commit SHA `actions/download-artifact` is pinned to.
         """
         return resource_content(
-            self.download_artifact_action_sha.__name__.upper(),
+            self.download_artifact_action_ref.__name__.upper(),
             resources,
         ).strip()
-
-    def download_artifact_action(self) -> str:
-        """Return the pinned action used for downloading artifacts."""
-        return f"actions/download-artifact@{self.download_artifact_action_sha()}"
 
     def artifact_name(self, os: str) -> str:
         """Build the workflow-artifact name for the given runner OS.

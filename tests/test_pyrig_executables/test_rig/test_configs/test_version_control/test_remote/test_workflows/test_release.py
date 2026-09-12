@@ -83,7 +83,10 @@ src/pyrig_executables/main.py""",
         assert ReleaseWorkflowConfigFile.I.step_upload_executable() == {
             "name": "Upload Executable",
             "id": "upload-executable",
-            "uses": ReleaseWorkflowConfigFile.I.upload_artifact_action(),
+            "uses": (
+                "actions/upload-artifact@"
+                f"{ReleaseWorkflowConfigFile.I.upload_artifact_action_ref()}"
+            ),
             "with": {
                 "name": "executable-${{ runner.os }}",
                 "path": "dist",
@@ -95,7 +98,10 @@ src/pyrig_executables/main.py""",
         assert ReleaseWorkflowConfigFile.I.step_download_executables() == {
             "name": "Download Executables",
             "id": "download-executables",
-            "uses": ReleaseWorkflowConfigFile.I.download_artifact_action(),
+            "uses": (
+                "actions/download-artifact@"
+                f"{ReleaseWorkflowConfigFile.I.download_artifact_action_ref()}"
+            ),
             "with": {
                 "pattern": "executable-*",
                 "path": "dist",
@@ -158,28 +164,14 @@ src/pyrig_executables/main.py""",
             "pyrig_executables.rig.resources",
         ]
 
-    def test_upload_artifact_action_sha(self) -> None:
+    def test_upload_artifact_action_ref(self) -> None:
         """Test method."""
-        assert ReleaseWorkflowConfigFile.I.upload_artifact_action_sha() == (
-            resource_content("UPLOAD_ARTIFACT_ACTION_SHA", resources).strip()
+        assert ReleaseWorkflowConfigFile.I.upload_artifact_action_ref() == (
+            resource_content("UPLOAD_ARTIFACT_ACTION_REF", resources).strip()
         )
 
-    def test_upload_artifact_action(self) -> None:
+    def test_download_artifact_action_ref(self) -> None:
         """Test method."""
-        assert ReleaseWorkflowConfigFile.I.upload_artifact_action() == (
-            "actions/upload-artifact@"
-            f"{ReleaseWorkflowConfigFile.I.upload_artifact_action_sha()}"
-        )
-
-    def test_download_artifact_action_sha(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.download_artifact_action_sha() == (
-            resource_content("DOWNLOAD_ARTIFACT_ACTION_SHA", resources).strip()
-        )
-
-    def test_download_artifact_action(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.download_artifact_action() == (
-            "actions/download-artifact@"
-            f"{ReleaseWorkflowConfigFile.I.download_artifact_action_sha()}"
+        assert ReleaseWorkflowConfigFile.I.download_artifact_action_ref() == (
+            resource_content("DOWNLOAD_ARTIFACT_ACTION_REF", resources).strip()
         )
