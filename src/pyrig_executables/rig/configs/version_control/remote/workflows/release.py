@@ -5,7 +5,7 @@ from types import ModuleType
 from typing import Any
 
 from pyrig.core.resources import resource_content
-from pyrig.rig.configs.base.config_file import Priority
+from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile as BaseReleaseWorkflowConfigFile,
 )
@@ -78,19 +78,16 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         steps.insert(create_release_index, self.step_download_executables())
         return steps
 
-    def priority(self) -> float:
-        """Return a priority one step after the resources config's.
+    def dependencies(self) -> Iterable[type[ConfigFile[Any]]]:
+        """Return config files required before building the workflow.
 
-        Building the executable requires the project's resources package to
-        already exist, so this config must validate after it. Deriving from
-        its priority instead of hard-coding a value keeps this config's
-        priority in step with any future change to the resources config's own
-        priority.
+        The `ResourcesInitConfigFile` is required because it is needed as a
+        loaded module in `collect_data_modules`.
 
         Returns:
-            The resources config's priority lowered by one `Priority.STEP`.
+            Direct config file dependencies for this workflow.
         """
-        return Priority.decrease(ResourcesInitConfigFile.I.priority())
+        return (*super().dependencies(), ResourcesInitConfigFile)
 
     def job_executable(self) -> dict[str, Any]:
         """Build the matrix job that compiles the executable on every OS.
@@ -157,7 +154,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         the `publish` job can later download every platform's binary.
 
         Returns:
-            Step using `actions/upload-artifact@<SHA>`.
+            Step using `actions/upload-artifact@<ref>`.
         """
         return self.step(
             self.step_upload_executable,
@@ -190,7 +187,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         attached to the release with one glob.
 
         Returns:
-            Step using `actions/download-artifact@<SHA>`.
+            Step using `actions/download-artifact@<ref>`.
         """
         return self.step(
             self.step_download_executables,

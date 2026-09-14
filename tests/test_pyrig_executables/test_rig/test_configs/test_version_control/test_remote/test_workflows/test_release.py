@@ -15,13 +15,6 @@ from pyrig_executables.rig.tools.version_control.remote.controller import (
 class TestReleaseWorkflowConfigFile:
     """Test class."""
 
-    def test_priority(self) -> None:
-        """Test method."""
-        assert (
-            ReleaseWorkflowConfigFile.I.priority()
-            < ResourcesInitConfigFile.I.priority()
-        )
-
     def test_jobs(self) -> None:
         """Test method."""
         jobs = ReleaseWorkflowConfigFile.I.jobs()
@@ -175,3 +168,7 @@ src/pyrig_executables/main.py""",
         assert ReleaseWorkflowConfigFile.I.download_artifact_action_ref() == (
             resource_content("DOWNLOAD_ARTIFACT_ACTION_REF", resources).strip()
         )
+
+    def test_dependencies(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.dependencies() == (ResourcesInitConfigFile,)
