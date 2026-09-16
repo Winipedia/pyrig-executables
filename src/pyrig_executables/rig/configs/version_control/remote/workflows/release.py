@@ -4,7 +4,6 @@ from collections.abc import Iterable
 from types import ModuleType
 from typing import Any
 
-from pyrig.core.resources import resource_content
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile as BaseReleaseWorkflowConfigFile,
@@ -158,26 +157,20 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step(
             self.step_upload_executable,
-            uses=(
-                "actions/upload-artifact",
-                self.upload_artifact_action_ref(),
-            ),
+            uses=self.upload_artifact_action(),
             with_={
                 "name": self.artifact_name(self.insert_os()),
                 "path": PackageManager.I.dist_dir().as_posix(),
             },
         )
 
-    def upload_artifact_action_ref(self) -> str:
-        """Return the pinned commit SHA for `actions/upload-artifact`.
+    def upload_artifact_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/upload-artifact`.
 
         Returns:
-            Commit SHA `actions/upload-artifact` is pinned to.
+            Tuple of action name, pinned commit SHA, and release tag.
         """
-        return resource_content(
-            self.upload_artifact_action_ref.__name__.upper(),
-            resources,
-        ).strip()
+        return self.action_from_resource(self.upload_artifact_action, resources)
 
     def step_download_executables(self) -> dict[str, Any]:
         """Build a step that downloads every executable artifact into `dist/`.
@@ -191,10 +184,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step(
             self.step_download_executables,
-            uses=(
-                "actions/download-artifact",
-                self.download_artifact_action_ref(),
-            ),
+            uses=self.download_artifact_action(),
             with_={
                 "pattern": self.artifact_name("*"),
                 "path": PackageManager.I.dist_dir().as_posix(),
@@ -202,16 +192,13 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             },
         )
 
-    def download_artifact_action_ref(self) -> str:
-        """Return the pinned commit SHA for `actions/download-artifact`.
+    def download_artifact_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/download-artifact`.
 
         Returns:
-            Commit SHA `actions/download-artifact` is pinned to.
+            Tuple of action name, pinned commit SHA, and release tag.
         """
-        return resource_content(
-            self.download_artifact_action_ref.__name__.upper(),
-            resources,
-        ).strip()
+        return self.action_from_resource(self.download_artifact_action, resources)
 
     def artifact_name(self, os: str) -> str:
         """Build the workflow-artifact name for the given runner OS.
