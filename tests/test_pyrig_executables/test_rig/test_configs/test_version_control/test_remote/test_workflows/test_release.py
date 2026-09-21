@@ -1,6 +1,7 @@
 """Test module."""
 
 from pyrig.core.resources import resource_content
+from pyrig.core.strings import read_text_utf8
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
 from pyrig_executables.rig import resources
@@ -163,10 +164,20 @@ src/pyrig_executables/main.py""",
             resource_content("UPLOAD_ARTIFACT_ACTION", resources).splitlines(),
         )
 
+        action, ref, tag = ReleaseWorkflowConfigFile.I.upload_artifact_action()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            ReleaseWorkflowConfigFile.I.path(),
+        )
+
     def test_download_artifact_action(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.download_artifact_action() == tuple(
             resource_content("DOWNLOAD_ARTIFACT_ACTION", resources).splitlines(),
+        )
+
+        action, ref, tag = ReleaseWorkflowConfigFile.I.download_artifact_action()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            ReleaseWorkflowConfigFile.I.path(),
         )
 
     def test_dependencies(self) -> None:
