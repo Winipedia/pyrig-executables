@@ -1,7 +1,7 @@
 """Extension of the release workflow that builds and attaches executables."""
 
 from collections.abc import Iterable
-from types import ModuleType
+from types import MethodType, ModuleType
 from typing import Any
 
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -40,23 +40,13 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             **super().jobs(),
         }
 
-    def job_publish(self) -> dict[str, Any]:
-        """Build the release job, gated on the executable build job.
-
-        Adds a `needs` dependency on `executable`, alongside the base
-        class's own `needs`, so the release is only published once the
-        health check has passed AND every platform's binary is available
-        to attach.
+    def job_publish_needs(self) -> tuple[MethodType, ...]:
+        """Return the jobs required before publishing a release.
 
         Returns:
-            The base release job with the `executable` dependency appended
-            to its existing `needs`.
+            The base class's dependencies plus the executable build job.
         """
-        job = super().job_publish()
-        job[self.job_id_from_method(self.job_publish)]["needs"].append(
-            self.job_id_from_method(self.job_executable),
-        )
-        return job
+        return (*super().job_publish_needs(), self.job_executable)
 
     def steps_publish(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the release job.

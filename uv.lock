@@ -856,7 +856,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "18.85.4"
+version = "18.86.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "inquirerpy" },
@@ -868,9 +868,9 @@ dependencies = [
     { name = "tomli-w" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4b/97/93141eb053d44bf8397645cc4450b21fd2c2d0eab0439ecc8676a956398b/pyrig-18.85.4.tar.gz", hash = "sha256:87fc09e5ac573151e23443003c922c79a556cd02cb7dd142a5408e4773bef293", size = 105877, upload-time = "2026-09-22T19:31:52.519Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b9/eb/4b9c784b8f8534600dc7902b223faddbc7f15a47e715ba3fcb17962a0eb4/pyrig-18.86.0.tar.gz", hash = "sha256:5815094ec9152371950c7ffc4e220fb7e1517a02243bd071b817c65f082c9595", size = 106077, upload-time = "2026-09-23T22:10:04.984Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/dd/61/31d5eaf382c4b381c1a46d614da2b453fa567418e44a885014dc38704b73/pyrig-18.85.4-py3-none-any.whl", hash = "sha256:7ed0e46f9dd2fdc0eea9eaa6df5548823621a61238835a5e2f94a84a447cee89", size = 171050, upload-time = "2026-09-22T19:31:50.607Z" },
+    { url = "https://files.pythonhosted.org/packages/38/bd/2b5840917fb2eb0cd88ca44a82af23e4e4f3807410422199b1fbdceb541f/pyrig-18.86.0-py3-none-any.whl", hash = "sha256:8368f273c4960a19184da51354690d1886bf63dacad69bdb7921952ca54f2f87", size = 171251, upload-time = "2026-09-23T22:10:03.528Z" },
 ]
 
 [[package]]
@@ -887,8 +887,21 @@ wheels = [
 ]
 
 [[package]]
+name = "pyrig-codeql"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyrig" },
+    { name = "pyrig-runtime" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f3/b4/18adde4a855302813abdb691d94c8669cf2f7e51df5bebfcfd94be410bd7/pyrig_codeql-1.0.0.tar.gz", hash = "sha256:4a43e98eac9107d2435f95b176922d059910cc9d306c92be60215d33f758af26", size = 5857, upload-time = "2026-09-23T22:59:11.236Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/51/ee/8b628b5de726f1f4734d063bc5fbd3aa9e094fb06b8a8383822585a90314/pyrig_codeql-1.0.0-py3-none-any.whl", hash = "sha256:080414a13683e3d3510b754196531da7e4b905b3ac6e0f98afb9dac56538a175", size = 9308, upload-time = "2026-09-23T22:59:10.246Z" },
+]
+
+[[package]]
 name = "pyrig-executables"
-version = "3.18.27"
+version = "3.18.28"
 source = { editable = "." }
 dependencies = [
     { name = "pyrig" },
@@ -910,6 +923,7 @@ dev = [
     { name = "pyinstaller" },
     { name = "pyrig" },
     { name = "pyrig-codecov" },
+    { name = "pyrig-codeql" },
     { name = "pyrig-fixtures" },
     { name = "pyrig-pypi" },
     { name = "pytest" },
@@ -930,7 +944,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pyrig", specifier = ">=18.85.1" },
+    { name = "pyrig", specifier = ">=18.86.0" },
     { name = "pyrig-resources", specifier = ">=3.13.74" },
     { name = "pyrig-runtime", specifier = ">=3.23.45" },
 ]
@@ -947,8 +961,9 @@ dev = [
     { name = "prek", specifier = ">=0.5.3" },
     { name = "pyflakes", specifier = ">=3.4.0" },
     { name = "pyinstaller", specifier = ">=6.22.3" },
-    { name = "pyrig", specifier = ">=18.85.1" },
+    { name = "pyrig", specifier = ">=18.86.0" },
     { name = "pyrig-codecov", specifier = ">=3.17.31" },
+    { name = "pyrig-codeql", specifier = ">=1.0.0" },
     { name = "pyrig-fixtures", specifier = ">=2.24.59" },
     { name = "pyrig-pypi", specifier = ">=3.20.28" },
     { name = "pytest", specifier = ">=9.1.1" },

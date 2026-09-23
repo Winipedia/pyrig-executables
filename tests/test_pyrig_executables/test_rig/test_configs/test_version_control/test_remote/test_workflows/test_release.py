@@ -39,6 +39,13 @@ class TestReleaseWorkflowConfigFile:
         assert "publish" in job
         assert job["publish"]["needs"] == ["health-check", "executable"]
 
+    def test_job_publish_needs(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.job_publish_needs() == (
+            ReleaseWorkflowConfigFile.I.job_health_check,
+            ReleaseWorkflowConfigFile.I.job_executable,
+        )
+
     def test_steps_executable(self) -> None:
         """Test method."""
         steps = ReleaseWorkflowConfigFile.I.steps_executable()
