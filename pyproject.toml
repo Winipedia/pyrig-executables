@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-executables"
-version = "3.18.33"
+version = "3.18.34"
 description = "A pyrig plugin to build executables."
 readme = "README.md"
 requires-python = ">=3.12"
