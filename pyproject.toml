@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-executables"
-version = "3.18.47"
+version = "3.18.48"
 description = "A pyrig plugin to build executables."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -122,3 +122,7 @@ select = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ryl.rules]
+ALL = "enable"
+key-ordering = "disable"
