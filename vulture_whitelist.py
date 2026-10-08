@@ -11,9 +11,9 @@ from pyrig_executables.rig.tools.executables.builder import ExecutableBuilder
 
 _COMMANDS = (run,)
 _CONFIG_FILE_OVERRIDES = (
-    ConfigFile._configs,
-    ConfigFile._dump,
-    ConfigFile._load,
+    ConfigFile._configs,  # noqa: SLF001
+    ConfigFile._dump,  # noqa: SLF001
+    ConfigFile._load,  # noqa: SLF001
     ConfigFile.extension,
     ConfigFile.is_correct,
     ConfigFile.stem,
