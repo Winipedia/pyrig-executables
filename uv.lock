@@ -937,19 +937,19 @@ wheels = [
 
 [[package]]
 name = "pyrig-codeql"
-version = "1.1.47"
+version = "1.1.48"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/33/1f/5d94792b527dd4e9d1f334d423b9524e4afeb61fa82ef918d5c9c628c90a/pyrig_codeql-1.1.47.tar.gz", hash = "sha256:917eee3f759e18f914a7844e3d46d21936038b22c5a6f44744fa109e121e3b85", size = 7334, upload-time = "2026-10-13T09:37:42.557Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/37/16/3c3479787ad292d84f39a17aaad143dbe40ab765ace6a23f7765ddca4b54/pyrig_codeql-1.1.48.tar.gz", hash = "sha256:159fa7b7a88d41a71b04299d1263bc28c2db78b34fbf8f36093f31b7de45d8b5", size = 7340, upload-time = "2026-10-15T20:18:52.962Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/04/cc/02d774d9e683be9fd4bd0758e573d48581f3bfbdcf6ad02f846a4103de5a/pyrig_codeql-1.1.47-py3-none-any.whl", hash = "sha256:6da0306d70646325e6e413777ce668fa3ca355aa709d8dbe5f0ed2fa6df0ad84", size = 10239, upload-time = "2026-10-13T09:37:41.413Z" },
+    { url = "https://files.pythonhosted.org/packages/96/e8/de92b429223ad9ac355c9624f2a67b2c38905b4b8c9c8333c583c1638ab8/pyrig_codeql-1.1.48-py3-none-any.whl", hash = "sha256:f01fa1f5d4675c602a04b040e2b7b7435b7266e735609248051811cbb1545a6c", size = 10237, upload-time = "2026-10-15T20:18:52.076Z" },
 ]
 
 [[package]]
 name = "pyrig-executables"
-version = "3.19.1"
+version = "3.19.2"
 source = { editable = "." }
 dependencies = [
     { name = "pyrig" },
