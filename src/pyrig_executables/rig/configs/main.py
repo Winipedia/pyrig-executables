@@ -31,19 +31,19 @@ class MainConfigFile(CopyModuleConfigFile):
         """Return whether the project's `main.py` is valid.
 
         Overrides the inherited content check: `main.py` is correct once the
-        target module exposes a callable `main` and contains a `__main__`
+        target file contains the text `def main` and the canonical `__main__`
         execution guard, regardless of what the function body does. This lets
         a project's own entry-point implementation stand unmodified.
 
         Returns:
-            `True` if the target module defines a callable `main` and the
-            `__main__` guard is present.
+            `True` if both the `def main` text and the `__main__` guard are
+            present in the target file.
         """
         return self.has_callable_main() and self.has_main_guard()
 
     def has_callable_main(self) -> bool:
-        """Return whether the target module exposes a callable `main` attribute."""
-        return callable(getattr(self.module(), main_func.__name__, None))
+        """Return whether the target file contains the text `def main`."""
+        return "def main" in self.read_content()
 
     def has_main_guard(self) -> bool:
         """Return whether the target module's file contains the `__main__` guard.

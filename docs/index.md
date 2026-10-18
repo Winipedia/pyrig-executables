@@ -89,7 +89,7 @@ cumulative download count of the release binaries.
 
 `MainConfigFile` scaffolds a `main.py` containing a `main` function and an
 `if __name__ == "__main__"` guard — the target the executable is built from.
-Validation only checks that a callable `main` and the guard are present, so your
+Validation only checks that the text `def main` and the guard are present, so your
 own entry point is preserved.
 
 ### Icon

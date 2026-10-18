@@ -10,6 +10,7 @@ from pyrig.rig.configs.version_control.remote.workflows.release import (
 )
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
+from pyrig_runtime.core.introspection.modules import replace_root_module
 
 from pyrig_executables.rig import resources
 from pyrig_executables.rig.configs.icon import IconConfigFile
@@ -241,4 +242,4 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         Returns:
             The project's resource modules (the `rig/resources` package).
         """
-        return (ResourcesInitConfigFile.I.module(),)
+        return (replace_root_module(resources, PackageManager.I.package_name()),)
