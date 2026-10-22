@@ -58,7 +58,7 @@ class ExecutableBuilder(Tool):
             The `pyinstaller` build artifacts: the `dist/` output directory,
             the generated `*.spec` files, and the `build/` working directory.
         """
-        return ("*.spec", "build/")
+        return (*super().version_control_ignore_patterns(), "*.spec", "build/")
 
     def build_args(
         self,
