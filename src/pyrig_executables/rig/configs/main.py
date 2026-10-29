@@ -7,6 +7,7 @@ that a suitable build target always exists.
 """
 
 from types import ModuleType
+from typing import override
 
 from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 
@@ -23,10 +24,12 @@ class MainConfigFile(CopyModuleConfigFile):
     entry-point contract that `is_correct` checks for.
     """
 
+    @override
     def copy_module(self) -> ModuleType:
         """Return the `pyrig_executables.main` module used as `main.py` scaffolding."""
         return main_module
 
+    @override
     def is_correct(self) -> bool:
         """Return whether the project's `main.py` is valid.
 

@@ -1,6 +1,7 @@
 """Customization of the remote version controller."""
 
 from collections.abc import Iterable
+from typing import override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.packages.manager import PackageManager
@@ -12,6 +13,7 @@ from pyrig.rig.tools.version_control.remote.controller import (
 class RemoteVersionController(BaseRemoteVersionController):
     """Overrides the base class to include executable artifacts in releases."""
 
+    @override
     def create_release_args(
         self,
         *args: str,

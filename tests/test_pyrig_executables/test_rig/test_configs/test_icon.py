@@ -13,26 +13,9 @@ from pyrig_executables.rig.configs.icon import IconConfigFile
 class TestIconConfigFile:
     """Test class."""
 
-    def test_parent_path(self) -> None:
-        """Test method."""
-        assert IconConfigFile.I.parent_path() == ResourcesInitConfigFile.I.parent_path()
-
-    def test_stem(self) -> None:
-        """Test method."""
-        assert IconConfigFile.I.stem() == "icon"
-
-    def test_extension(self) -> None:
-        """Test method."""
-        assert IconConfigFile.I.extension() == "png"
-
     def test__configs(self) -> None:
         """Test method."""
         assert IconConfigFile.I._configs() == {}  # noqa: SLF001
-
-    def test__load(self) -> None:
-        """Test method."""
-        with pytest.raises(RuntimeError):
-            IconConfigFile.I._load()  # noqa: SLF001
 
     def test__dump(self, mocker: MockerFixture, tmp_path: Path) -> None:
         """Test method."""
@@ -42,6 +25,15 @@ class TestIconConfigFile:
             IconConfigFile.I._dump({})  # noqa: SLF001
             assert icon.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
 
+    def test__load(self) -> None:
+        """Test method."""
+        with pytest.raises(RuntimeError):
+            IconConfigFile.I._load()  # noqa: SLF001
+
+    def test_extension(self) -> None:
+        """Test method."""
+        assert IconConfigFile.I.extension() == "png"
+
     def test_is_correct(self, tmp_path: Path) -> None:
         """Test method."""
         with chdir(tmp_path):
@@ -50,3 +42,11 @@ class TestIconConfigFile:
             assert not IconConfigFile.I.is_correct()
             IconConfigFile.I.path().write_bytes(b"\x89PNG\r\n\x1a\n")
             assert IconConfigFile.I.is_correct()
+
+    def test_parent_path(self) -> None:
+        """Test method."""
+        assert IconConfigFile.I.parent_path() == ResourcesInitConfigFile.I.parent_path()
+
+    def test_stem(self) -> None:
+        """Test method."""
+        assert IconConfigFile.I.stem() == "icon"

@@ -2,7 +2,7 @@
 
 from collections.abc import Iterable
 from types import MethodType, ModuleType
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.version_control.remote.workflows.release import (
@@ -27,6 +27,28 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     generated changelog.
     """
 
+    @override
+    def dependencies(self) -> Iterable[type[ConfigFile[Any]]]:
+        """Return config files required before building the workflow.
+
+        The `ResourcesInitConfigFile` is required because it is needed as a
+        loaded module in `collect_data_modules`.
+
+        Returns:
+            Direct config file dependencies for this workflow.
+        """
+        return (*super().dependencies(), ResourcesInitConfigFile)
+
+    @override
+    def job_publish_needs(self) -> tuple[MethodType, ...]:
+        """Return the jobs required before publishing a release.
+
+        Returns:
+            The base class's dependencies plus the executable build job.
+        """
+        return (*super().job_publish_needs(), self.job_executable)
+
+    @override
     def jobs(self) -> dict[str, Any]:
         """Build the complete set of workflow jobs.
 
@@ -41,14 +63,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             **super().jobs(),
         }
 
-    def job_publish_needs(self) -> tuple[MethodType, ...]:
-        """Return the jobs required before publishing a release.
-
-        Returns:
-            The base class's dependencies plus the executable build job.
-        """
-        return (*super().job_publish_needs(), self.job_executable)
-
+    @override
     def steps_publish(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the release job.
 
@@ -68,17 +83,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         steps.insert(create_release_index, self.step_download_executables())
         return steps
 
-    def dependencies(self) -> Iterable[type[ConfigFile[Any]]]:
-        """Return config files required before building the workflow.
-
-        The `ResourcesInitConfigFile` is required because it is needed as a
-        loaded module in `collect_data_modules`.
-
-        Returns:
-            Direct config file dependencies for this workflow.
-        """
-        return (*super().dependencies(), ResourcesInitConfigFile)
-
     def job_executable(self) -> dict[str, Any]:
         """Build the matrix job that compiles the executable on every OS.
 
@@ -97,6 +101,34 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             runs_on=self.insert_matrix_os(),
             steps=self.steps_executable(),
         )
+
+    def step_download_executables(self) -> dict[str, Any]:
+        """Build a step that downloads every executable artifact into `dist/`.
+
+        Merges every per-OS executable artifact, matched by the
+        `artifact_name` glob, into a single `dist/` directory so they can be
+        attached to the release with one glob.
+
+        Returns:
+            Step using `actions/download-artifact@<ref>`.
+        """
+        return self.step(
+            self.step_download_executables,
+            uses=self.download_artifact_action(),
+            with_={
+                "pattern": self.artifact_name("*"),
+                "path": PackageManager.I.dist_dir().as_posix(),
+                "merge-multiple": "true",
+            },
+        )
+
+    def download_artifact_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/download-artifact`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.download_artifact_action, resources)
 
     def steps_executable(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the executable build job.
@@ -155,42 +187,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             },
         )
 
-    def upload_artifact_action(self) -> tuple[str, str, str]:
-        """Return action metadata for `actions/upload-artifact`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.upload_artifact_action, resources)
-
-    def step_download_executables(self) -> dict[str, Any]:
-        """Build a step that downloads every executable artifact into `dist/`.
-
-        Merges every per-OS executable artifact, matched by the
-        `artifact_name` glob, into a single `dist/` directory so they can be
-        attached to the release with one glob.
-
-        Returns:
-            Step using `actions/download-artifact@<ref>`.
-        """
-        return self.step(
-            self.step_download_executables,
-            uses=self.download_artifact_action(),
-            with_={
-                "pattern": self.artifact_name("*"),
-                "path": PackageManager.I.dist_dir().as_posix(),
-                "merge-multiple": "true",
-            },
-        )
-
-    def download_artifact_action(self) -> tuple[str, str, str]:
-        """Return action metadata for `actions/download-artifact`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.download_artifact_action, resources)
-
     def artifact_name(self, os: str) -> str:
         """Build the workflow-artifact name for the given runner OS.
 
@@ -207,15 +203,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             The `executable-<os>` artifact name.
         """
         return f"executable-{os}"
-
-    def insert_os(self) -> str:
-        """Return the expression that resolves to the current runner's OS.
-
-        Returns:
-            GitHub Actions expression for `runner.os` (e.g. `Linux`,
-            `Windows`, `macOS`).
-        """
-        return self.insert_expression("runner.os")
 
     def collect_all_modules(self) -> Iterable[ModuleType]:
         """Return the modules to bundle in full (data, submodules, binaries).
@@ -243,3 +230,20 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             The project's resource modules (the `rig/resources` package).
         """
         return (replace_root_module(resources, PackageManager.I.package_name()),)
+
+    def insert_os(self) -> str:
+        """Return the expression that resolves to the current runner's OS.
+
+        Returns:
+            GitHub Actions expression for `runner.os` (e.g. `Linux`,
+            `Windows`, `macOS`).
+        """
+        return self.insert_expression("runner.os")
+
+    def upload_artifact_action(self) -> tuple[str, str, str]:
+        """Return action metadata for `actions/upload-artifact`.
+
+        Returns:
+            Tuple of action name, pinned commit SHA, and release tag.
+        """
+        return self.action_from_resource(self.upload_artifact_action, resources)

@@ -12,32 +12,6 @@ from pyrig_executables.rig.tools.executables.builder import ExecutableBuilder
 class TestExecutableBuilder:
     """Test class."""
 
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        assert ExecutableBuilder.I.dev_dependencies() == ("pyinstaller", "pillow")
-
-    def test_name(self) -> None:
-        """Test method."""
-        assert ExecutableBuilder.I.name() == "pyinstaller"
-
-    def test_group(self) -> None:
-        """Test method."""
-        assert ExecutableBuilder.I.group() == "project-info"
-
-    def test_image_url(self) -> None:
-        """Test method."""
-        assert (
-            ExecutableBuilder.I.image_url()
-            == "https://img.shields.io/github/downloads/Winipedia/pyrig-executables/total?logo=github&label=downloads"
-        )
-
-    def test_link_url(self) -> None:
-        """Test method."""
-        assert (
-            ExecutableBuilder.I.link_url()
-            == "https://github.com/Winipedia/pyrig-executables/releases"
-        )
-
     def test_build_args(self) -> None:
         """Test method."""
         assert ExecutableBuilder.I.build_args(
@@ -110,6 +84,32 @@ class TestExecutableBuilder:
             "--icon=icon.png",
             "entry/point.py",
         )
+
+    def test_dev_dependencies(self) -> None:
+        """Test method."""
+        assert ExecutableBuilder.I.dev_dependencies() == ("pyinstaller", "pillow")
+
+    def test_group(self) -> None:
+        """Test method."""
+        assert ExecutableBuilder.I.group() == "project-info"
+
+    def test_image_url(self) -> None:
+        """Test method."""
+        assert (
+            ExecutableBuilder.I.image_url()
+            == "https://img.shields.io/github/downloads/Winipedia/pyrig-executables/total?logo=github&label=downloads"
+        )
+
+    def test_link_url(self) -> None:
+        """Test method."""
+        assert (
+            ExecutableBuilder.I.link_url()
+            == "https://github.com/Winipedia/pyrig-executables/releases"
+        )
+
+    def test_name(self) -> None:
+        """Test method."""
+        assert ExecutableBuilder.I.name() == "pyinstaller"
 
     def test_version_control_ignore_patterns(self) -> None:
         """Test method."""

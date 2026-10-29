@@ -3,6 +3,7 @@
 from collections.abc import Iterable
 from pathlib import Path
 from types import ModuleType
+from typing import override
 
 from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.base.tool import Group, Tool
@@ -19,6 +20,7 @@ class ExecutableBuilder(Tool):
     executables are published.
     """
 
+    @override
     def dev_dependencies(self) -> tuple[str, ...]:
         """Return the dev dependencies required to build executables.
 
@@ -31,10 +33,12 @@ class ExecutableBuilder(Tool):
         """
         return (*super().dev_dependencies(), "pillow")
 
+    @override
     def group(self) -> str:
         """Return `Group.PROJECT_INFO`."""
         return Group.PROJECT_INFO
 
+    @override
     def image_url(self) -> str:
         """Return the shields.io URL for the GitHub release downloads badge."""
         owner, repo = (
@@ -43,14 +47,17 @@ class ExecutableBuilder(Tool):
         )
         return f"https://img.shields.io/github/downloads/{owner}/{repo}/total?logo=github&label=downloads"
 
+    @override
     def link_url(self) -> str:
         """Return the GitHub releases page URL where the binaries are published."""
         return RemoteVersionController.I.releases_url()
 
+    @override
     def name(self) -> str:
         """Return `'pyinstaller'`."""
         return "pyinstaller"
 
+    @override
     def version_control_ignore_patterns(self) -> tuple[str, ...]:
         """Return the build artifact paths to exclude from version control.
 

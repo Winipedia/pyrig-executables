@@ -11,10 +11,6 @@ class TestMainConfigFile:
         """Test method."""
         assert MainConfigFile.I.copy_module() is main_module
 
-    def test_is_correct(self) -> None:
-        """Test method."""
-        assert MainConfigFile.I.is_correct()
-
     def test_has_callable_main(self) -> None:
         """Test method."""
         assert MainConfigFile.I.has_callable_main()
@@ -22,6 +18,10 @@ class TestMainConfigFile:
     def test_has_main_guard(self) -> None:
         """Test method."""
         assert MainConfigFile.I.has_main_guard()
+
+    def test_is_correct(self) -> None:
+        """Test method."""
+        assert MainConfigFile.I.is_correct()
 
     def test_main_guard(self) -> None:
         """Test method."""
