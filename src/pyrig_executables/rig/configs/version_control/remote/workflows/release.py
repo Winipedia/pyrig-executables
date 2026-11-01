@@ -100,6 +100,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             permissions=self.permission_contents(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_executable(),
+            timeout_minutes=60,
         )
 
     def step_download_executables(self) -> dict[str, Any]:
