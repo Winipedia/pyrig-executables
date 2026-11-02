@@ -1,6 +1,6 @@
 """Extension of the release workflow that builds and attaches executables."""
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from types import MethodType, ModuleType
 from typing import Any, override
 
@@ -49,19 +49,19 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         return (*super().job_publish_needs(), self.job_executable)
 
     @override
-    def jobs(self) -> dict[str, Any]:
-        """Build the complete set of workflow jobs.
+    def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
+        """Return the complete tuple of workflow job builders.
 
         Adds the executable build job to the base release jobs.
 
         Returns:
-            Dict containing the executable build job together with the base
-            release jobs.
+            Tuple containing the executable build job builder followed by the base
+            release job builders.
         """
-        return {
-            **self.job_executable(),
-            **super().jobs(),
-        }
+        return (
+            self.job_executable,
+            *super().jobs(),
+        )
 
     @override
     def steps_publish(self) -> list[dict[str, Any]]:
@@ -97,7 +97,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         return self.job(
             self.job_executable,
             strategy=self.strategy_matrix_os(),
-            permissions=self.permission_contents(),
+            permissions=self.job_executable_permissions(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_executable(),
             timeout_minutes=60,
@@ -130,6 +130,14 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             Tuple of action name, pinned commit SHA, and release tag.
         """
         return self.action_from_resource(self.download_artifact_action, resources)
+
+    def job_executable_permissions(self) -> dict[str, Any]:
+        """Return the permissions for the executable build job.
+
+        Returns:
+            Permissions mapping granting `contents: read`.
+        """
+        return self.permission_contents()
 
     def steps_executable(self) -> list[dict[str, Any]]:
         """Build the ordered steps for the executable build job.

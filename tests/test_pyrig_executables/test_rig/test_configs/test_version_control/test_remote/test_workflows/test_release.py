@@ -90,17 +90,22 @@ class TestReleaseWorkflowConfigFile:
         """Test method."""
         job = ReleaseWorkflowConfigFile.I.job_executable()
         assert isinstance(job, dict)
-        assert "executable" in job
-        assert len(job) == 1
-        assert job["executable"]["permissions"] == {"contents": "read"}
-        assert "if" not in job["executable"]
+        assert job["job_id"] == "executable"
+        assert job["permissions"] == {"contents": "read"}
+        assert "if" not in job
+
+    def test_job_executable_permissions(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.job_executable_permissions() == {
+            "contents": "read",
+        }
 
     def test_job_publish(self) -> None:
         """Test method."""
         job = ReleaseWorkflowConfigFile.I.job_publish()
         assert isinstance(job, dict)
-        assert "publish" in job
-        assert job["publish"]["needs"] == ["health-check", "executable"]
+        assert job["job_id"] == "publish"
+        assert job["needs"] == ["health-check", "executable"]
 
     def test_job_publish_needs(self) -> None:
         """Test method."""
@@ -111,10 +116,11 @@ class TestReleaseWorkflowConfigFile:
 
     def test_jobs(self) -> None:
         """Test method."""
-        jobs = ReleaseWorkflowConfigFile.I.jobs()
-        assert isinstance(jobs, dict)
-        assert "executable" in jobs
-        assert "publish" in jobs
+        workflow = ReleaseWorkflowConfigFile.I
+        jobs = workflow.jobs()
+        assert isinstance(jobs, tuple)
+        assert workflow.job_executable in jobs
+        assert workflow.job_publish in jobs
 
     def test_step_build_executable(self) -> None:
         """Test method."""

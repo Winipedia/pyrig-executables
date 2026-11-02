@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-executables"
-version = "3.21.2"
+version = "3.22.4"
 description = "A pyrig plugin to build executables."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -27,7 +27,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "pyrig>=19.2.0",
+  "pyrig>=19.9.0",
   "pyrig-resources>=3.14.0",
   "pyrig-runtime>=3.27.0",
 ]
