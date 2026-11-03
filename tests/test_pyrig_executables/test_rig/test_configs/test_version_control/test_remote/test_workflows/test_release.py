@@ -16,6 +16,28 @@ from pyrig_executables.rig.tools.version_control.remote.controller import (
 class TestReleaseWorkflowConfigFile:
     """Test class."""
 
+    def test_action_download_artifact(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.action_download_artifact() == tuple(
+            resource_content("ACTION_DOWNLOAD_ARTIFACT", resources).splitlines(),
+        )
+
+        action, ref, tag = ReleaseWorkflowConfigFile.I.action_download_artifact()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            ReleaseWorkflowConfigFile.I.path(),
+        )
+
+    def test_action_upload_artifact(self) -> None:
+        """Test method."""
+        assert ReleaseWorkflowConfigFile.I.action_upload_artifact() == tuple(
+            resource_content("ACTION_UPLOAD_ARTIFACT", resources).splitlines(),
+        )
+
+        action, ref, tag = ReleaseWorkflowConfigFile.I.action_upload_artifact()
+        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
+            ReleaseWorkflowConfigFile.I.path(),
+        )
+
     def test_artifact_name(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.artifact_name("${{ runner.os }}") == (
@@ -70,17 +92,6 @@ class TestReleaseWorkflowConfigFile:
     def test_dependencies(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.dependencies() == (ResourcesInitConfigFile,)
-
-    def test_download_artifact_action(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.download_artifact_action() == tuple(
-            resource_content("DOWNLOAD_ARTIFACT_ACTION", resources).splitlines(),
-        )
-
-        action, ref, tag = ReleaseWorkflowConfigFile.I.download_artifact_action()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            ReleaseWorkflowConfigFile.I.path(),
-        )
 
     def test_insert_os(self) -> None:
         """Test method."""
@@ -147,7 +158,7 @@ src/pyrig_executables/main.py""",
             "id": "download-executables",
             "uses": (
                 "actions/download-artifact@"
-                f"{ReleaseWorkflowConfigFile.I.download_artifact_action()[1]}"
+                f"{ReleaseWorkflowConfigFile.I.action_download_artifact()[1]}"
             ),
             "with": {
                 "pattern": "executable-*",
@@ -163,7 +174,7 @@ src/pyrig_executables/main.py""",
             "id": "upload-executable",
             "uses": (
                 "actions/upload-artifact@"
-                f"{ReleaseWorkflowConfigFile.I.upload_artifact_action()[1]}"
+                f"{ReleaseWorkflowConfigFile.I.action_upload_artifact()[1]}"
             ),
             "with": {
                 "name": "executable-${{ runner.os }}",
@@ -185,14 +196,3 @@ src/pyrig_executables/main.py""",
         assert "download-executables" in ids
         assert "create-release" in ids
         assert ids.index("download-executables") < ids.index("create-release")
-
-    def test_upload_artifact_action(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.upload_artifact_action() == tuple(
-            resource_content("UPLOAD_ARTIFACT_ACTION", resources).splitlines(),
-        )
-
-        action, ref, tag = ReleaseWorkflowConfigFile.I.upload_artifact_action()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            ReleaseWorkflowConfigFile.I.path(),
-        )
