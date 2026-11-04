@@ -107,7 +107,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """Build a step that downloads every executable artifact into `dist/`.
 
         Merges every per-OS executable artifact, matched by the
-        `artifact_name` glob, into a single `dist/` directory so they can be
+        `executable_artifact_name` glob, into a single `dist/` directory so they can be
         attached to the release with one glob.
 
         Returns:
@@ -115,7 +115,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step_download_artifact(
             self.step_download_executables,
-            pattern=self.artifact_name("*"),
+            pattern=self.executable_artifact_name("*"),
             path=PackageManager.I.dist_dir(),
             merge_multiple=True,
         )
@@ -170,7 +170,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     def step_upload_executable(self) -> dict[str, Any]:
         """Build a step that uploads the built executable as a workflow artifact.
 
-        Uploads the contents of `dist/` under the per-OS `artifact_name` so
+        Uploads the contents of `dist/` under the per-OS `executable_artifact_name` so
         the `publish` job can later download every platform's binary.
 
         Returns:
@@ -178,26 +178,9 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """
         return self.step_upload_artifact(
             self.step_upload_executable,
-            name=self.artifact_name(self.insert_os()),
+            name=self.executable_artifact_name(self.insert_os()),
             path=PackageManager.I.dist_dir(),
         )
-
-    def artifact_name(self, os: str) -> str:
-        """Build the workflow-artifact name for the given runner OS.
-
-        Single source of the `executable-<os>` artifact label. Kept
-        deliberately generic and distinct from `executable_name`, so it does
-        not collide with artifacts that other actions may name after the
-        project.
-
-        Args:
-            os: The runner OS suffix, or `"*"` to build a name matching
-                every OS.
-
-        Returns:
-            The `executable-<os>` artifact name.
-        """
-        return f"executable-{os}"
 
     def collect_all_modules(self) -> Iterable[ModuleType]:
         """Return the modules to bundle in full (data, submodules, binaries).
@@ -225,6 +208,23 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             The project's resource modules (the `rig/resources` package).
         """
         return (replace_root_module(resources, PackageManager.I.package_name()),)
+
+    def executable_artifact_name(self, os: str) -> str:
+        """Build the workflow-artifact name for the given runner OS.
+
+        Single source of the `executable-<os>` artifact label. Kept
+        deliberately generic and distinct from `executable_name`, so it does
+        not collide with artifacts that other actions may name after the
+        project.
+
+        Args:
+            os: The runner OS suffix, or `"*"` to build a name matching
+                every OS.
+
+        Returns:
+            The `executable-<os>` artifact name.
+        """
+        return f"executable-{os}"
 
     def insert_os(self) -> str:
         """Return the expression that resolves to the current runner's OS.

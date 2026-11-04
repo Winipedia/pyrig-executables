@@ -13,13 +13,6 @@ from pyrig_executables.rig.tools.version_control.remote.controller import (
 class TestReleaseWorkflowConfigFile:
     """Test class."""
 
-    def test_artifact_name(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.artifact_name("${{ runner.os }}") == (
-            "executable-${{ runner.os }}"
-        )
-        assert ReleaseWorkflowConfigFile.I.artifact_name("*") == "executable-*"
-
     def test_collect_all_modules(self) -> None:
         """Test method."""
         modules = ReleaseWorkflowConfigFile.I.collect_all_modules()
@@ -67,6 +60,14 @@ class TestReleaseWorkflowConfigFile:
     def test_dependencies(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.dependencies() == (ResourcesInitConfigFile,)
+
+    def test_executable_artifact_name(self) -> None:
+        """Test method."""
+        workflow = ReleaseWorkflowConfigFile.I
+        assert workflow.executable_artifact_name("${{ runner.os }}") == (
+            "executable-${{ runner.os }}"
+        )
+        assert workflow.executable_artifact_name("*") == "executable-*"
 
     def test_insert_os(self) -> None:
         """Test method."""
