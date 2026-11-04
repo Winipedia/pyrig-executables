@@ -67,6 +67,7 @@
         "with":
           "name": "executable-${{ runner.os }}"
           "path": "dist"
+          "if-no-files-found": "error"
   "health-check":
     "name": "Health Check"
     "permissions":
