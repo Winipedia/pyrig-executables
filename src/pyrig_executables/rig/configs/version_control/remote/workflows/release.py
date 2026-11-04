@@ -113,23 +113,12 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         Returns:
             Step using `actions/download-artifact@<ref>`.
         """
-        return self.step(
+        return self.step_download_artifact(
             self.step_download_executables,
-            uses=self.action_download_artifact(),
-            with_={
-                "pattern": self.artifact_name("*"),
-                "path": PackageManager.I.dist_dir().as_posix(),
-                "merge-multiple": "true",
-            },
+            pattern=self.artifact_name("*"),
+            path=PackageManager.I.dist_dir(),
+            merge_multiple=True,
         )
-
-    def action_download_artifact(self) -> tuple[str, str, str]:
-        """Return action metadata for `actions/download-artifact`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.action_download_artifact, resources)
 
     def job_executable_permissions(self) -> dict[str, Any]:
         """Return the permissions for the executable build job.
@@ -187,22 +176,11 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         Returns:
             Step using `actions/upload-artifact@<ref>`.
         """
-        return self.step(
+        return self.step_upload_artifact(
             self.step_upload_executable,
-            uses=self.action_upload_artifact(),
-            with_={
-                "name": self.artifact_name(self.insert_os()),
-                "path": PackageManager.I.dist_dir().as_posix(),
-            },
+            name=self.artifact_name(self.insert_os()),
+            path=PackageManager.I.dist_dir(),
         )
-
-    def action_upload_artifact(self) -> tuple[str, str, str]:
-        """Return action metadata for `actions/upload-artifact`.
-
-        Returns:
-            Tuple of action name, pinned commit SHA, and release tag.
-        """
-        return self.action_from_resource(self.action_upload_artifact, resources)
 
     def artifact_name(self, os: str) -> str:
         """Build the workflow-artifact name for the given runner OS.

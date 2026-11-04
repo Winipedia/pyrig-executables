@@ -1,10 +1,7 @@
 """Test module."""
 
-from pyrig.core.resources import resource_content
-from pyrig.core.strings import read_text_utf8
 from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
 
-from pyrig_executables.rig import resources
 from pyrig_executables.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
@@ -15,28 +12,6 @@ from pyrig_executables.rig.tools.version_control.remote.controller import (
 
 class TestReleaseWorkflowConfigFile:
     """Test class."""
-
-    def test_action_download_artifact(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.action_download_artifact() == tuple(
-            resource_content("ACTION_DOWNLOAD_ARTIFACT", resources).splitlines(),
-        )
-
-        action, ref, tag = ReleaseWorkflowConfigFile.I.action_download_artifact()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            ReleaseWorkflowConfigFile.I.path(),
-        )
-
-    def test_action_upload_artifact(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.action_upload_artifact() == tuple(
-            resource_content("ACTION_UPLOAD_ARTIFACT", resources).splitlines(),
-        )
-
-        action, ref, tag = ReleaseWorkflowConfigFile.I.action_upload_artifact()
-        assert f'"uses": "{action}@{ref}"  # {tag}' in read_text_utf8(
-            ReleaseWorkflowConfigFile.I.path(),
-        )
 
     def test_artifact_name(self) -> None:
         """Test method."""
@@ -113,10 +88,14 @@ class TestReleaseWorkflowConfigFile:
 
     def test_job_publish(self) -> None:
         """Test method."""
-        job = ReleaseWorkflowConfigFile.I.job_publish()
+        workflow = ReleaseWorkflowConfigFile.I
+        job = workflow.job_publish()
         assert isinstance(job, dict)
         assert job["job_id"] == "publish"
         assert job["needs"] == ["health-check", "executable"]
+        steps = job["steps"]
+        ids = [step["id"] for step in steps]
+        assert ids.index("download-executables") < ids.index("create-release")
 
     def test_job_publish_needs(self) -> None:
         """Test method."""
@@ -179,6 +158,7 @@ src/pyrig_executables/main.py""",
             "with": {
                 "name": "executable-${{ runner.os }}",
                 "path": "dist",
+                "if-no-files-found": "error",
             },
         }
 
