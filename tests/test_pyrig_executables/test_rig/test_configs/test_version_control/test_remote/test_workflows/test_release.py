@@ -50,14 +50,10 @@ class TestReleaseWorkflowConfigFile:
     def test_executable_artifact_name(self) -> None:
         """Test method."""
         workflow = ReleaseWorkflowConfigFile.I
-        assert workflow.executable_artifact_name("${{ runner.os }}") == (
-            "executable-${{ runner.os }}"
+        assert workflow.executable_artifact_name("${{ matrix.os }}") == (
+            "executable-${{ matrix.os }}"
         )
         assert workflow.executable_artifact_name("*") == "executable-*"
-
-    def test_insert_os(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.insert_os() == "${{ runner.os }}"
 
     def test_job_executable(self) -> None:
         """Test method."""
@@ -133,7 +129,7 @@ class TestReleaseWorkflowConfigFile:
                 f"{ReleaseWorkflowConfigFile.I.action_upload_artifact()[1]}"
             ),
             "with": {
-                "name": "executable-${{ runner.os }}",
+                "name": "executable-${{ matrix.os }}",
                 "path": "dist",
                 "if-no-files-found": "error",
             },

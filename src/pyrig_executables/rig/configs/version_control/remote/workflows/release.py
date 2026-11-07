@@ -89,7 +89,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """Build a step that uploads the executable artifact."""
         return self.step_upload_artifact(
             self.step_upload_executable,
-            name=self.executable_artifact_name(self.insert_os()),
+            name=self.executable_artifact_name(self.insert_matrix_os()),
             path=PackageManager.I.dist_dir(),
         )
 
@@ -97,10 +97,6 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
         """Return the workflow-artifact name for a runner.
 
         Args:
-            os: Runner OS name, or `"*"` to match every OS.
+            os: Matrix OS label, or `"*"` to match every OS.
         """
         return f"executable-{os}"
-
-    def insert_os(self) -> str:
-        """Return the GitHub Actions expression for the runner OS."""
-        return self.insert_expression("runner.os")
