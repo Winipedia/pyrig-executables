@@ -45,17 +45,7 @@
       -
         "name": "Build Executable"
         "id": "build-executable"
-        "run": |-
-          uv \
-          run \
-          pyinstaller \
-          --onefile \
-          --name=pyrig-executables-"${OS}" \
-          --icon=src/pyrig_executables/rig/resources/icon.png \
-          --collect-data=pyrig_executables.rig.resources \
-          src/pyrig_executables/main.py
-        "env":
-          "OS": "${{ runner.os }}"
+        "run": "bash build-executable.sh"
       -
         "name": "Upload Executable"
         "id": "upload-executable"
@@ -72,7 +62,7 @@
       "contents": "read"
       "id-token": "write"  # required
       "security-events": "write"  # required
-    "uses": "$/.github/workflows/health_check.yml"
+    "uses": "$/.github/workflows/health-check.yml"
   "publish":
     "name": "Publish"
     "permissions":
@@ -117,12 +107,12 @@
         "id": "create-release"
         "run": |-
           gh \
-          release \
-          create \
-          "${VERSION}" \
-          dist/* \
-          --title="${VERSION}" \
-          --generate-notes
+            release \
+            create \
+            "${VERSION}" \
+            dist/* \
+            --title="${VERSION}" \
+            --generate-notes
         "env":
           "GH_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
           "VERSION": "${{ steps.extract-version.outputs.version }}"

@@ -1,7 +1,7 @@
 # Home
 
 <!-- project-status -->
-[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-executables/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig-executables/actions/workflows/health_check.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-executables/health-check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig-executables/actions/workflows/health-check.yml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-executables/release.yml?label=CD&logo=github)](https://github.com/Winipedia/pyrig-executables/actions/workflows/release.yml)
 [![ProjectTester](https://codecov.io/gh/Winipedia/pyrig-executables/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/pyrig-executables)
 <!-- code-quality -->
@@ -55,8 +55,8 @@
 pyrig-executables turns a pyrig-managed project into standalone executables and
 publishes them with every GitHub release. Installed as a development dependency,
 it plugs into pyrig's config-generation and tooling system: the entry point, the
-icon, the build tooling, and the release workflow steps needed to compile and
-attach a per-OS binary are scaffolded, validated, and kept in sync
+icon, the build script and tooling, and the release workflow steps needed to
+compile and attach a per-OS binary are scaffolded, validated, and kept in sync
 automatically. This page describes each piece; see the API Reference for the
 generated, code-level documentation.
 
@@ -86,6 +86,23 @@ project's resources package via `--collect-data`. It declares `pyinstaller` and
 `*.spec`, `build/`) from version control, and contributes a badge showing the
 cumulative download count of the release binaries.
 
+### Build script
+
+`BuildExecutableConfigFile` generates `build-executable.sh` at the project root.
+The script runs the executable builder via uv and names the binary
+`<project-name>-<platform-suffix>`.
+
+Run it from the project root after `pyrig sync`:
+
+```bash
+bash build-executable.sh
+```
+
+Override `collect_all_modules` or `collect_data_modules` on
+`BuildExecutableConfigFile` to bundle additional modules into the executable:
+`--collect-all` for modules that ship submodules or binaries alongside their
+data, `--collect-data` for known pure-data packages.
+
 ### Entry point
 
 `MainConfigFile` scaffolds a `main.py` containing a `main` function and an
@@ -104,15 +121,10 @@ on Linux). It is created only when missing, so any icon you drop in is kept.
 
 The release workflow gains an `executable` matrix job that fans out across
 Linux, Windows, and macOS — PyInstaller cannot cross-compile, so each binary is
-built on its target platform. Every job builds and names the binary per OS so
-the assets do not collide, and uploads it as a workflow artifact. The existing
+built on its target platform. Every job runs `bash build-executable.sh`
+and uploads the binary as a workflow artifact. The existing
 `publish` job is gated on it, downloads every platform's binary, and attaches
 them to the GitHub release alongside the changelog.
-
-Override `collect_all_modules` or `collect_data_modules` on
-`ReleaseWorkflowConfigFile` to bundle additional modules into the executable:
-`--collect-all` for modules that ship submodules or binaries alongside their
-data, `--collect-data` for known pure-data packages.
 
 ### Run command
 

@@ -1,7 +1,7 @@
 # pyrig-executables
 
 <!-- project-status -->
-[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-executables/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig-executables/actions/workflows/health_check.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-executables/health-check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig-executables/actions/workflows/health-check.yml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-executables/release.yml?label=CD&logo=github)](https://github.com/Winipedia/pyrig-executables/actions/workflows/release.yml)
 [![ProjectTester](https://codecov.io/gh/Winipedia/pyrig-executables/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/pyrig-executables)
 <!-- code-quality -->
@@ -60,6 +60,7 @@ system to every GitHub release — so anyone can run it without installing Pytho
 
 - **Standalone executables** — a single-file binary of your project for Linux,
   Windows, and macOS, built with PyInstaller.
+- **Build script** — a generated `build-executable.sh` at the project root.
 - **Release integration** — a matrix build job that compiles and attaches a
   binary per OS to each release.
 - **Entry point and icon** — a `main.py` and a default icon, both scaffolded and
@@ -78,6 +79,12 @@ uv run pyrig sync
 
 No tokens or secrets are required — the release workflow uses GitHub's automatic
 token.
+
+To build locally, run the generated script from the project root:
+
+```bash
+bash build-executable.sh
+```
 
 ## Documentation
 

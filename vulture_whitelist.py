@@ -2,9 +2,11 @@
 
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
+from pyrig.rig.configs.base.shell import ShellConfigFile
 from pyrig.rig.tools.base.tool import Tool
 
 from pyrig_executables.rig.cli.subcommands import run
+from pyrig_executables.rig.configs.build_executable import BuildExecutableConfigFile
 from pyrig_executables.rig.configs.icon import IconConfigFile
 from pyrig_executables.rig.configs.main import MainConfigFile
 from pyrig_executables.rig.tools.executables.builder import ExecutableBuilder
@@ -18,8 +20,10 @@ _CONFIG_FILE_OVERRIDES = (
     ConfigFile.is_correct,
     ConfigFile.stem,
     CopyModuleConfigFile.copy_module,
+    ShellConfigFile.script,
 )
 _CONFIG_FILES = (
+    BuildExecutableConfigFile,
     IconConfigFile,
     MainConfigFile,
 )

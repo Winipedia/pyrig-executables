@@ -14,7 +14,7 @@ from pyrig_executables.rig import resources
 class IconConfigFile(DictConfigFile):
     """Config file that scaffolds the `icon.png` used as the executable's icon.
 
-    The release workflow bundles this file into the built executable as its
+    The executable build script uses this file as the built executable's
     icon. The scaffolded file is a default -- replace it with your own; it is
     created only when missing, so a project's own icon is preserved.
 

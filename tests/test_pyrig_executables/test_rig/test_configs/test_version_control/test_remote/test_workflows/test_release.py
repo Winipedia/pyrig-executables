@@ -1,7 +1,5 @@
 """Test module."""
 
-from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
-
 from pyrig_executables.rig.configs.version_control.remote.workflows.release import (
     ReleaseWorkflowConfigFile,
 )
@@ -12,18 +10,6 @@ from pyrig_executables.rig.tools.version_control.remote.controller import (
 
 class TestReleaseWorkflowConfigFile:
     """Test class."""
-
-    def test_collect_all_modules(self) -> None:
-        """Test method."""
-        modules = ReleaseWorkflowConfigFile.I.collect_all_modules()
-        assert modules == ()
-
-    def test_collect_data_modules(self) -> None:
-        """Test method."""
-        modules = list(ReleaseWorkflowConfigFile.I.collect_data_modules())
-        assert [module.__name__ for module in modules] == [
-            "pyrig_executables.rig.resources",
-        ]
 
     def test_create_release_args(self) -> None:
         """Test that executable artifacts are release arguments."""
@@ -59,7 +45,7 @@ class TestReleaseWorkflowConfigFile:
 
     def test_dependencies(self) -> None:
         """Test method."""
-        assert ReleaseWorkflowConfigFile.I.dependencies() == (ResourcesInitConfigFile,)
+        assert ReleaseWorkflowConfigFile.I.dependencies() == ()
 
     def test_executable_artifact_name(self) -> None:
         """Test method."""
@@ -118,17 +104,7 @@ class TestReleaseWorkflowConfigFile:
         assert ReleaseWorkflowConfigFile.I.step_build_executable() == {
             "name": "Build Executable",
             "id": "build-executable",
-            "run": r"""uv \
-run \
-pyinstaller \
---onefile \
---name=pyrig-executables-"${OS}" \
---icon=src/pyrig_executables/rig/resources/icon.png \
---collect-data=pyrig_executables.rig.resources \
-src/pyrig_executables/main.py""",
-            "env": {
-                "OS": "${{ runner.os }}",
-            },
+            "run": "bash build-executable.sh",
         }
 
     def test_step_download_executables(self) -> None:
