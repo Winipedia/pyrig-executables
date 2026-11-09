@@ -61,7 +61,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
             merge_multiple=True,
         )
 
-    def job_executable_permissions(self) -> dict[str, Any]:
+    def job_executable_permissions(self) -> dict[str, str]:
         """Return the permissions for the executable build job."""
         return self.permission_contents()
 
