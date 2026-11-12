@@ -14,47 +14,7 @@
     "name": "Executable"
     "permissions":
       "contents": "read"
-    "runs-on": "${{ matrix.os }}"
-    "timeout-minutes": 60
-    "strategy":
-      "matrix":
-        "os":
-          - "ubuntu-latest"
-          - "windows-latest"
-          - "macos-latest"
-      "fail-fast": true
-    "steps":
-      -
-        "name": "Checkout Repository"
-        "id": "checkout-repository"
-        # ryl disable-line rule:line-length
-        "uses": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
-        "with":
-          "persist-credentials": false
-      -
-        "name": "Setup Package Manager"
-        "id": "setup-package-manager"
-        # ryl disable-line rule:line-length
-        "uses": "astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2"  # v10.3.3
-        "with":
-          "python-version": "3.15"
-      -
-        "name": "Install Dependencies"
-        "id": "install-dependencies"
-        "run": "uv sync"
-      -
-        "name": "Build Executable"
-        "id": "build-executable"
-        "run": "bash build-executable.sh"
-      -
-        "name": "Upload Executable"
-        "id": "upload-executable"
-        # ryl disable-line rule:line-length
-        "uses": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"  # v7.0.2
-        "with":
-          "name": "executable-${{ matrix.os }}"
-          "path": "dist"
-          "if-no-files-found": "error"
+    "uses": "$/.github/workflows/executable.yml"
   "health-check":
     "name": "Health Check"
     "permissions":
@@ -122,9 +82,9 @@
       "contents": "read"
       "id-token": "write"  # required
       "pages": "write"  # required
+    "secrets":
+      "REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"
     "needs":
       - "publish"
     "uses": "$/.github/workflows/deploy.yml"
-    "secrets":
-      "REPO_TOKEN": "${{ secrets.REPO_TOKEN }}"
 ...

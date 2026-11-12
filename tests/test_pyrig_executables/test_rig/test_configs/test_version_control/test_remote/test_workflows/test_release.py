@@ -43,42 +43,17 @@ class TestReleaseWorkflowConfigFile:
             "--draft",
         )
 
-    def test_dependencies(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.dependencies() == ()
-
-    def test_executable_artifact_name(self) -> None:
-        """Test method."""
-        workflow = ReleaseWorkflowConfigFile.I
-        assert workflow.executable_artifact_name("${{ matrix.os }}") == (
-            "executable-${{ matrix.os }}"
-        )
-        assert workflow.executable_artifact_name("*") == "executable-*"
-
     def test_job_executable(self) -> None:
         """Test method."""
         job = ReleaseWorkflowConfigFile.I.job_executable()
         assert isinstance(job, dict)
         assert job["job_id"] == "executable"
         assert job["permissions"] == {"contents": "read"}
-        assert "if" not in job
-
-    def test_job_executable_permissions(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.job_executable_permissions() == {
-            "contents": "read",
-        }
-
-    def test_job_publish(self) -> None:
-        """Test method."""
-        workflow = ReleaseWorkflowConfigFile.I
-        job = workflow.job_publish()
-        assert isinstance(job, dict)
-        assert job["job_id"] == "publish"
-        assert job["needs"] == ["health-check", "executable"]
-        steps = job["steps"]
-        ids = [step["id"] for step in steps]
-        assert ids.index("download-executables") < ids.index("create-release")
+        assert job["uses"] == "$/.github/workflows/executable.yml"
+        assert "runs-on" not in job
+        assert "strategy" not in job
+        assert "steps" not in job
+        assert "secrets" not in job
 
     def test_job_publish_needs(self) -> None:
         """Test method."""
@@ -95,14 +70,6 @@ class TestReleaseWorkflowConfigFile:
         assert workflow.job_executable in jobs
         assert workflow.job_publish in jobs
 
-    def test_step_build_executable(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.step_build_executable() == {
-            "name": "Build Executable",
-            "id": "build-executable",
-            "run": "bash build-executable.sh",
-        }
-
     def test_step_download_executables(self) -> None:
         """Test method."""
         assert ReleaseWorkflowConfigFile.I.step_download_executables() == {
@@ -118,29 +85,6 @@ class TestReleaseWorkflowConfigFile:
                 "merge-multiple": "true",
             },
         }
-
-    def test_step_upload_executable(self) -> None:
-        """Test method."""
-        assert ReleaseWorkflowConfigFile.I.step_upload_executable() == {
-            "name": "Upload Executable",
-            "id": "upload-executable",
-            "uses": (
-                "actions/upload-artifact@"
-                f"{ReleaseWorkflowConfigFile.I.action_upload_artifact()[1]}"
-            ),
-            "with": {
-                "name": "executable-${{ matrix.os }}",
-                "path": "dist",
-                "if-no-files-found": "error",
-            },
-        }
-
-    def test_steps_executable(self) -> None:
-        """Test method."""
-        steps = ReleaseWorkflowConfigFile.I.steps_executable()
-        names = [step["name"] for step in steps]
-        assert "Build Executable" in names
-        assert "Upload Executable" in names
 
     def test_steps_publish(self) -> None:
         """Test method."""

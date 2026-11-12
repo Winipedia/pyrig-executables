@@ -121,14 +121,14 @@ project's resources package. The build passes it to `pyinstaller --icon`, which
 converts it to the per-OS format (`.ico` on Windows, `.icns` on macOS; ignored
 on Linux). It is created only when missing, so any icon you drop in is kept.
 
-### Release workflow
+### Executable workflow
 
-The release workflow gains an `executable` matrix job that fans out across
-Linux, Windows, and macOS — PyInstaller cannot cross-compile, so each binary is
-built on its target platform. Every job runs `bash build-executable.sh`
-and uploads the binary as a workflow artifact. The existing
-`publish` job is gated on it, downloads every platform's binary, and attaches
-them to the GitHub release alongside the changelog.
+`ExecutableWorkflowConfigFile` generates the reusable `executable.yml` workflow,
+called by release. Its `build` matrix runs `bash build-executable.sh` on Linux,
+Windows, and macOS and uploads each binary as an artifact. PyInstaller cannot
+cross-compile, so each binary is built on its target platform. Release's `publish`
+job waits for the workflow, downloads the binaries, and attaches them to the
+GitHub release alongside the changelog.
 
 ### Run command
 

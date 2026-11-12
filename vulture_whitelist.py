@@ -3,6 +3,7 @@
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 from pyrig.rig.configs.base.shell import ShellConfigFile
+from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.base.tool import Tool
 
 from pyrig_executables.rig.cli.subcommands import run
@@ -21,6 +22,8 @@ _CONFIG_FILE_OVERRIDES = (
     ConfigFile.stem,
     CopyModuleConfigFile.copy_module,
     ShellConfigFile.script,
+    WorkflowConfigFile.concurrency_cancel_in_progress,
+    WorkflowConfigFile.workflow_triggers,
 )
 _CONFIG_FILES = (
     BuildExecutableConfigFile,
