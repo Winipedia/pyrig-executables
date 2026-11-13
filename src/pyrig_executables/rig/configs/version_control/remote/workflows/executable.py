@@ -39,13 +39,13 @@ class ExecutableWorkflowConfigFile(WorkflowConfigFile):
         return self.job(
             self.job_build,
             strategy=self.strategy_matrix_os(),
-            permissions=self.job_build_permissions(),
+            permissions=self.permissions_job_build(),
             runs_on=self.insert_matrix_os(),
             steps=self.steps_build(),
             timeout_minutes=60,
         )
 
-    def job_build_permissions(self) -> dict[str, str]:
+    def permissions_job_build(self) -> dict[str, str]:
         """Return read-only repository permissions for checkout."""
         return self.permission_contents()
 

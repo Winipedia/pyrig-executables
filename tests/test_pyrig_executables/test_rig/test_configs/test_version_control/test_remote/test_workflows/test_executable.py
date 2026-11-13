@@ -36,16 +36,16 @@ class TestExecutableWorkflowConfigFile:
         assert job["steps"] == workflow.steps_build()
         assert "environment" not in job
 
-    def test_job_build_permissions(self) -> None:
-        """Check checkout is read-only."""
-        assert ExecutableWorkflowConfigFile.I.job_build_permissions() == {
-            "contents": "read",
-        }
-
     def test_jobs(self) -> None:
         """Check the workflow contains the build matrix."""
         workflow = ExecutableWorkflowConfigFile.I
         assert workflow.jobs() == (workflow.job_build,)
+
+    def test_permissions_job_build(self) -> None:
+        """Check checkout is read-only."""
+        assert ExecutableWorkflowConfigFile.I.permissions_job_build() == {
+            "contents": "read",
+        }
 
     def test_stem(self) -> None:
         """Check the workflow filename."""
