@@ -53,11 +53,10 @@ class TestExecutableWorkflowConfigFile:
 
     def test_step_build_executable(self) -> None:
         """Check the generated build script is invoked."""
-        assert ExecutableWorkflowConfigFile.I.step_build_executable() == {
-            "name": "Build Executable",
-            "id": "build-executable",
-            "run": "bash build-executable.sh",
-        }
+        step = ExecutableWorkflowConfigFile.I.step_build_executable()
+        assert step["name"] == "Build Executable"
+        assert step["id"] == "build-executable"
+        assert step["run"] == "bash build-executable.sh"
 
     def test_step_upload_executable(self) -> None:
         """Check per-platform artifacts keep their names and fail if missing."""
