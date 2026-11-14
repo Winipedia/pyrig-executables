@@ -50,6 +50,7 @@
       -
         "name": "Extract Version"
         "id": "extract-version"
+        "shell": "bash"
         "run": |-
           VERSION="$(uv version --short)"
           echo version="${VERSION}" >> "${GITHUB_OUTPUT}"
@@ -65,6 +66,7 @@
       -
         "name": "Create Release"
         "id": "create-release"
+        "shell": "bash"
         "run": |-
           gh \
             release \

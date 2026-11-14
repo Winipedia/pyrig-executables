@@ -39,10 +39,12 @@
       -
         "name": "Install Dependencies"
         "id": "install-dependencies"
+        "shell": "bash"
         "run": "uv sync"
       -
         "name": "Build Executable"
         "id": "build-executable"
+        "shell": "bash"
         "run": "bash build-executable.sh"
       -
         "name": "Upload Executable"
