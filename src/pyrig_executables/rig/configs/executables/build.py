@@ -8,12 +8,12 @@ from typing import Any, override
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.base.shell import ShellConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
-from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
+from pyrig_resources.rig.configs.resources.init import ResourcesInitConfigFile
 from pyrig_runtime.core.introspection.modules import replace_root_module
 
 from pyrig_executables.rig import resources
-from pyrig_executables.rig.configs.icon import IconConfigFile
-from pyrig_executables.rig.configs.main import MainConfigFile
+from pyrig_executables.rig.configs.executables.icon import IconConfigFile
+from pyrig_executables.rig.configs.executables.main import MainConfigFile
 from pyrig_executables.rig.tools.executables.builder import ExecutableBuilder
 
 

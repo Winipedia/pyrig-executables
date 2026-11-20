@@ -4,10 +4,10 @@ from contextlib import chdir
 from pathlib import Path
 
 import pytest
-from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
+from pyrig_resources.rig.configs.resources.init import ResourcesInitConfigFile
 from pytest_mock import MockerFixture
 
-from pyrig_executables.rig.configs.icon import IconConfigFile
+from pyrig_executables.rig.configs.executables.icon import IconConfigFile
 
 
 class TestIconConfigFile:

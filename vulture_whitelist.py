@@ -7,9 +7,9 @@ from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.base.tool import Tool
 
 from pyrig_executables.rig.cli.subcommands import run
-from pyrig_executables.rig.configs.build_executable import BuildExecutableConfigFile
-from pyrig_executables.rig.configs.icon import IconConfigFile
-from pyrig_executables.rig.configs.main import MainConfigFile
+from pyrig_executables.rig.configs.executables.build import BuildExecutableConfigFile
+from pyrig_executables.rig.configs.executables.icon import IconConfigFile
+from pyrig_executables.rig.configs.executables.main import MainConfigFile
 from pyrig_executables.rig.tools.executables.builder import ExecutableBuilder
 
 _COMMANDS = (run,)

@@ -1,7 +1,7 @@
 """Test module."""
 
 from pyrig_executables import main as main_module
-from pyrig_executables.rig.configs.main import MainConfigFile
+from pyrig_executables.rig.configs.executables.main import MainConfigFile
 
 
 class TestMainConfigFile:

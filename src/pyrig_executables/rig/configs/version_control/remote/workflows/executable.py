@@ -8,7 +8,7 @@ from pyrig.rig.configs.base.workflow import WorkflowConfigFile
 from pyrig.rig.tools.formatting.shell import ShellFormatter
 from pyrig.rig.tools.packages.manager import PackageManager
 
-from pyrig_executables.rig.configs.build_executable import BuildExecutableConfigFile
+from pyrig_executables.rig.configs.executables.build import BuildExecutableConfigFile
 
 
 class ExecutableWorkflowConfigFile(WorkflowConfigFile):

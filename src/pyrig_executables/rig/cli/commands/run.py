@@ -2,7 +2,7 @@
 
 from runpy import run_path
 
-from pyrig_executables.rig.configs.main import MainConfigFile
+from pyrig_executables.rig.configs.executables.main import MainConfigFile
 
 
 def run_main() -> None:

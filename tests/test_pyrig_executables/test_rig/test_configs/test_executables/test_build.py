@@ -2,11 +2,11 @@
 
 from pathlib import Path
 
-from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
+from pyrig_resources.rig.configs.resources.init import ResourcesInitConfigFile
 from pytest_mock import MockerFixture
 
 from pyrig_executables.rig import resources
-from pyrig_executables.rig.configs.build_executable import BuildExecutableConfigFile
+from pyrig_executables.rig.configs.executables.build import BuildExecutableConfigFile
 
 
 class TestBuildExecutableConfigFile:

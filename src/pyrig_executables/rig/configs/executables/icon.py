@@ -6,7 +6,7 @@ from typing import Any, override
 
 from pyrig.core.resources import resource_path
 from pyrig.rig.configs.base.config_file import DictConfigFile
-from pyrig_resources.rig.configs.resources_init import ResourcesInitConfigFile
+from pyrig_resources.rig.configs.resources.init import ResourcesInitConfigFile
 
 from pyrig_executables.rig import resources
 
