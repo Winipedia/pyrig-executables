@@ -51,7 +51,8 @@ class TestBuildExecutableConfigFile:
 """
         )
         assert script.content() == (
-            "#!/usr/bin/env bash\nset -euo pipefail\n\n" + script.script()
+            "#!/usr/bin/env bash\nset -o errexit -o nounset -o pipefail\n\n"
+            + script.script()
         )
 
     def test_script_collect_modules(self, mocker: MockerFixture) -> None:
