@@ -1494,7 +1494,7 @@ wheels = [
 
 [[package]]
 name = "pyrig-executables"
-version = "5.1.14"
+version = "5.1.15"
 source = { editable = "." }
 dependencies = [
     { name = "pyrig" },
