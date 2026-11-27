@@ -15,11 +15,6 @@ class ExecutableWorkflowConfigFile(WorkflowConfigFile):
     """Build and upload an executable for each supported operating system."""
 
     @override
-    def concurrency_cancel_in_progress(self) -> bool:
-        """Return `False`; release builds must not be cancelled."""
-        return False
-
-    @override
     def jobs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the executable build matrix."""
         return (self.job_build,)

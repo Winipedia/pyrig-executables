@@ -22,7 +22,6 @@ _CONFIG_FILE_OVERRIDES = (
     ConfigFile.stem,
     CopyModuleConfigFile.copy_module,
     ShellConfigFile.script,
-    WorkflowConfigFile.concurrency_cancel_in_progress,
     WorkflowConfigFile.workflow_triggers,
 )
 _CONFIG_FILES = (

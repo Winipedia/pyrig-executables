@@ -8,10 +8,6 @@ from pyrig_executables.rig.configs.version_control.remote.workflows.executable i
 class TestExecutableWorkflowConfigFile:
     """Test executable build and artifact generation."""
 
-    def test_concurrency_cancel_in_progress(self) -> None:
-        """Check release builds are not cancelled."""
-        assert ExecutableWorkflowConfigFile.I.concurrency_cancel_in_progress() is False
-
     def test_executable_artifact_name(self) -> None:
         """Check matrix and wildcard artifact names."""
         workflow = ExecutableWorkflowConfigFile.I
