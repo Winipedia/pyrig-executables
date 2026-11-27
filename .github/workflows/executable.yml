@@ -45,7 +45,7 @@
         "name": "Build Executable"
         "id": "build-executable"
         "shell": "bash"
-        "run": "bash build-executable.sh"
+        "run": "bash scripts/build-executable.sh"
       -
         "name": "Upload Executable"
         "id": "upload-executable"

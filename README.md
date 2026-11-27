@@ -65,7 +65,7 @@ system to every GitHub release — so anyone can run it without installing Pytho
 
 - **Standalone executables** — a single-file binary of your project for Linux,
   Windows, and macOS, built with PyInstaller.
-- **Build script** — a generated `build-executable.sh` at the project root.
+- **Build script** — a generated `scripts/build-executable.sh`.
 - **Release integration** — a reusable executable workflow builds a binary per
   OS, which the release workflow attaches to each release.
 - **Entry point and icon** — a `main.py` and a default icon, both scaffolded and
@@ -88,7 +88,7 @@ token.
 To build locally, run the generated script from the project root:
 
 ```bash
-bash build-executable.sh
+bash scripts/build-executable.sh
 ```
 
 ## Documentation

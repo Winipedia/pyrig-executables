@@ -27,10 +27,6 @@ class TestBuildExecutableConfigFile:
         """Test that only the imported resource package is a hard dependency."""
         assert BuildExecutableConfigFile.I.dependencies() == (ResourcesInitConfigFile,)
 
-    def test_parent_path(self) -> None:
-        """Test that the platform-independent script lives at the project root."""
-        assert BuildExecutableConfigFile.I.parent_path() == Path()
-
     def test_required_env_vars(self) -> None:
         """Test that no caller-provided environment variables are required."""
         assert BuildExecutableConfigFile.I.required_env_vars() == ()
@@ -74,4 +70,4 @@ class TestBuildExecutableConfigFile:
     def test_stem(self) -> None:
         """Test the generated script's filename."""
         assert BuildExecutableConfigFile.I.stem() == "build-executable"
-        assert BuildExecutableConfigFile.I.path() == Path("build-executable.sh")
+        assert BuildExecutableConfigFile.I.path() == Path("scripts/build-executable.sh")

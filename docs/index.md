@@ -93,14 +93,14 @@ cumulative download count of the release binaries.
 
 ### Build script
 
-`BuildExecutableConfigFile` generates `build-executable.sh` at the project root.
+`BuildExecutableConfigFile` generates `scripts/build-executable.sh`.
 The script runs the executable builder via uv and names the binary
 `<project-name>-<platform-suffix>`.
 
 Run it from the project root after `pyrig sync`:
 
 ```bash
-bash build-executable.sh
+bash scripts/build-executable.sh
 ```
 
 Override `collect_all_modules` or `collect_data_modules` on
@@ -125,8 +125,8 @@ on Linux). It is created only when missing, so any icon you drop in is kept.
 ### Executable workflow
 
 `ExecutableWorkflowConfigFile` generates the reusable `executable.yml` workflow,
-called by release. Its `build` matrix runs `bash build-executable.sh` on Linux,
-Windows, and macOS and uploads each binary as an artifact. PyInstaller cannot
+called by release. Its `build` matrix runs `bash scripts/build-executable.sh` on
+Linux, Windows, and macOS and uploads each binary as an artifact. PyInstaller cannot
 cross-compile, so each binary is built on its target platform. Release's `publish`
 job waits for the workflow, downloads the binaries, and attaches them to the
 GitHub release alongside the changelog.

@@ -1,7 +1,6 @@
 """Shell script that builds the project's standalone executable."""
 
 from collections.abc import Iterable
-from pathlib import Path
 from types import ModuleType
 from typing import Any, override
 
@@ -18,17 +17,12 @@ from pyrig_executables.rig.tools.executables.builder import ExecutableBuilder
 
 
 class BuildExecutableConfigFile(ShellConfigFile):
-    """Generate the project-root script used to build the executable."""
+    """Generate the script used to build the executable."""
 
     @override
     def dependencies(self) -> Iterable[type[ConfigFile[Any]]]:
         """Return the config files required before generating the script."""
         return (*super().dependencies(), ResourcesInitConfigFile)
-
-    @override
-    def parent_path(self) -> Path:
-        """Return the project root."""
-        return Path()
 
     @override
     def script(self) -> str:

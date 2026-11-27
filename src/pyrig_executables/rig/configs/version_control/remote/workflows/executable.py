@@ -3,9 +3,8 @@
 from collections.abc import Callable
 from typing import Any, override
 
-from pyrig.core.subprocesses import Args
 from pyrig.rig.configs.base.workflow import WorkflowConfigFile
-from pyrig.rig.tools.formatting.shell import ShellFormatter
+from pyrig.rig.tools.linting.shell import ShellLinter
 from pyrig.rig.tools.packages.manager import PackageManager
 
 from pyrig_executables.rig.configs.executables.build import BuildExecutableConfigFile
@@ -57,9 +56,8 @@ class ExecutableWorkflowConfigFile(WorkflowConfigFile):
         return self.step(
             self.step_build_executable,
             run=str(
-                Args(
-                    ShellFormatter.I.dialect(),
-                    BuildExecutableConfigFile.I.path().as_posix(),
+                ShellLinter.I.run_script_args(
+                    file=BuildExecutableConfigFile.I.path(),
                 ),
             ),
         )

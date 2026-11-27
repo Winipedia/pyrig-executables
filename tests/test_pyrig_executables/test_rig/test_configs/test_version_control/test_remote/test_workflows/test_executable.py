@@ -52,7 +52,7 @@ class TestExecutableWorkflowConfigFile:
         step = ExecutableWorkflowConfigFile.I.step_build_executable()
         assert step["name"] == "Build Executable"
         assert step["id"] == "build-executable"
-        assert step["run"] == "bash build-executable.sh"
+        assert step["run"] == "bash scripts/build-executable.sh"
 
     def test_step_upload_executable(self) -> None:
         """Check per-platform artifacts keep their names and fail if missing."""
