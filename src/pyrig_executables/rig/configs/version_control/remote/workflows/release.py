@@ -1,7 +1,6 @@
 """Release integration for the reusable executable workflow."""
 
 from collections.abc import Callable
-from types import MethodType
 from typing import Any, override
 
 from pyrig.rig.configs.version_control.remote.workflows.release import (
@@ -18,7 +17,7 @@ class ReleaseWorkflowConfigFile(BaseReleaseWorkflowConfigFile):
     """Call the executable workflow and attach its artifacts to the release."""
 
     @override
-    def job_publish_needs(self) -> tuple[MethodType, ...]:
+    def job_publish_needs(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return the jobs required before publishing."""
         return (*super().job_publish_needs(), self.job_executable)
 
