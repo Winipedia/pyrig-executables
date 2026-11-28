@@ -21,7 +21,7 @@ class TestExecutableWorkflowConfigFile:
         workflow = ExecutableWorkflowConfigFile.I
         job = workflow.job_build()
         timeout = 60
-        assert job["job_id"] == "build"
+        assert "build" in workflow.job_as_dict(workflow.job_build)
         assert job["permissions"] == {"contents": "read"}
         assert job["runs-on"] == "${{ matrix.os }}"
         assert job["strategy"] == {
@@ -29,7 +29,7 @@ class TestExecutableWorkflowConfigFile:
             "fail-fast": True,
         }
         assert job["timeout-minutes"] == timeout
-        assert job["steps"] == workflow.steps_build()
+        assert job["steps"] == workflow.steps_configs(workflow.steps_build())
         assert "environment" not in job
 
     def test_jobs(self) -> None:
@@ -49,7 +49,8 @@ class TestExecutableWorkflowConfigFile:
 
     def test_step_build_executable(self) -> None:
         """Check the generated build script is invoked."""
-        step = ExecutableWorkflowConfigFile.I.step_build_executable()
+        workflow = ExecutableWorkflowConfigFile.I
+        step = workflow.step_as_dict(workflow.step_build_executable)
         assert step["name"] == "Build Executable"
         assert step["id"] == "build-executable"
         assert step["run"] == "bash scripts/build-executable.sh"
@@ -66,7 +67,8 @@ class TestExecutableWorkflowConfigFile:
 
     def test_steps_build(self) -> None:
         """Check setup precedes building and uploading."""
-        steps = ExecutableWorkflowConfigFile.I.steps_build()
+        workflow = ExecutableWorkflowConfigFile.I
+        steps = workflow.steps_configs(workflow.steps_build())
         assert [step["id"] for step in steps] == [
             "checkout-repository",
             "setup-package-manager",

@@ -31,7 +31,6 @@ class ExecutableWorkflowConfigFile(WorkflowConfigFile):
     def job_build(self) -> dict[str, Any]:
         """Build and upload executables on their target platforms."""
         return self.job(
-            self.job_build,
             strategy=self.strategy_matrix_os(),
             permissions=self.permissions_job_build(),
             runs_on=self.insert_matrix_os(),
@@ -43,18 +42,17 @@ class ExecutableWorkflowConfigFile(WorkflowConfigFile):
         """Return read-only repository permissions for checkout."""
         return self.permission_contents()
 
-    def steps_build(self) -> list[dict[str, Any]]:
+    def steps_build(self) -> tuple[Callable[[], dict[str, Any]], ...]:
         """Return setup, executable build, and artifact-upload steps."""
-        return [
+        return (
             *self.steps_core_installed_setup(),
-            self.step_build_executable(),
-            self.step_upload_executable(),
-        ]
+            self.step_build_executable,
+            self.step_upload_executable,
+        )
 
     def step_build_executable(self) -> dict[str, Any]:
         """Run the generated executable build script."""
         return self.step(
-            self.step_build_executable,
             run=str(
                 ShellLinter.I.run_script_args(
                     file=BuildExecutableConfigFile.I.path(),
@@ -65,7 +63,6 @@ class ExecutableWorkflowConfigFile(WorkflowConfigFile):
     def step_upload_executable(self) -> dict[str, Any]:
         """Upload this platform's executable artifact."""
         return self.step_upload_artifact(
-            self.step_upload_executable,
             name=self.executable_artifact_name(self.insert_matrix_os()),
             path=PackageManager.I.dist_dir(),
         )

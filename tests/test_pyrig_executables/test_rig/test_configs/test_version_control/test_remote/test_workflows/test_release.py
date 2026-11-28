@@ -45,9 +45,9 @@ class TestReleaseWorkflowConfigFile:
 
     def test_job_executable(self) -> None:
         """Test method."""
-        job = ReleaseWorkflowConfigFile.I.job_executable()
+        workflow = ReleaseWorkflowConfigFile.I
+        job = workflow.job_as_dict(workflow.job_executable)["executable"]
         assert isinstance(job, dict)
-        assert job["job_id"] == "executable"
         assert job["permissions"] == {"contents": "read"}
         assert job["uses"] == "$/.github/workflows/executable.yml"
         assert "runs-on" not in job
@@ -72,7 +72,8 @@ class TestReleaseWorkflowConfigFile:
 
     def test_step_download_executables(self) -> None:
         """Test method."""
-        assert ReleaseWorkflowConfigFile.I.step_download_executables() == {
+        workflow = ReleaseWorkflowConfigFile.I
+        assert workflow.step_as_dict(workflow.step_download_executables) == {
             "name": "Download Executables",
             "id": "download-executables",
             "uses": (
@@ -88,7 +89,8 @@ class TestReleaseWorkflowConfigFile:
 
     def test_steps_publish(self) -> None:
         """Test method."""
-        steps = ReleaseWorkflowConfigFile.I.steps_publish()
+        workflow = ReleaseWorkflowConfigFile.I
+        steps = workflow.steps_configs(workflow.steps_publish())
         ids = [step["id"] for step in steps]
         assert "download-executables" in ids
         assert "create-release" in ids
